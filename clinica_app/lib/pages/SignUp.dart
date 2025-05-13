@@ -1,4 +1,7 @@
+import 'dart:convert';
+import 'package:clinica_app/pages/Login.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 
 class SignUp extends StatefulWidget {
@@ -11,10 +14,13 @@ class SignUp extends StatefulWidget {
 // Define la clase _SignUpState, que representa el estado mutable del widget SignUp.
 class _SignUpState extends State<SignUp> {
   // Define una variable para mantener el valor seleccionado del DropdownButtonFormField para el género.
-  // Inicializa con "Masculino" para evitar errores de null.
-  String? _selectedGender = "Masculino";
   bool _obscureText = true; // Added to manage password visibility
-
+  final dniController = TextEditingController();
+  final contrasenaController = TextEditingController();
+  final nombreController = TextEditingController();
+  final apellidosController = TextEditingController();
+  final emailController = TextEditingController();
+  final telefonoController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     // Devuelve un Scaffold, que proporciona la estructura visual básica para la pantalla.
@@ -86,6 +92,7 @@ class _SignUpState extends State<SignUp> {
                     children: [
                       // Widget TextFormField para el campo DNI.
                       TextFormField(
+                        controller: dniController,//controaldor API
                         // Define la decoración del campo, incluyendo la etiqueta, el estilo de la etiqueta, el borde y el icono.
                         decoration: const InputDecoration(
                           labelText: "DNI",
@@ -107,6 +114,7 @@ class _SignUpState extends State<SignUp> {
             
                       // Widget TextFormField para el campo Contraseña.
                       TextFormField(
+                        controller: contrasenaController,//controaldor API
                         // Habilita el texto oculto.
                         obscureText: _obscureText,
                         // Define la decoración del campo, incluyendo la etiqueta, el estilo de la etiqueta, el borde y el icono.
@@ -142,6 +150,7 @@ class _SignUpState extends State<SignUp> {
             
                       // Widget TextFormField para el campo Nombre.
                       TextFormField(
+                        controller: nombreController,//controaldor API
                         // Define la decoración del campo, incluyendo la etiqueta, el estilo de la etiqueta, el borde y el icono.
                         decoration: const InputDecoration(
                           labelText: "Nombre",
@@ -163,6 +172,7 @@ class _SignUpState extends State<SignUp> {
             
                       // Widget TextFormField para el campo Apellidos.
                       TextFormField(
+                        controller: apellidosController,//controaldor API
                         // Define la decoración del campo, incluyendo la etiqueta, el estilo de la etiqueta, el borde y el icono.
                         decoration: const InputDecoration(
                           labelText: "Apellidos",
@@ -184,6 +194,7 @@ class _SignUpState extends State<SignUp> {
             
                       // Widget TextFormField para el campo Email.
                       TextFormField(
+                        controller: emailController,//controaldor API
                         // Define la decoración del campo, incluyendo la etiqueta, el estilo de la etiqueta, el borde y el icono.
                         decoration: const InputDecoration(
                           labelText: "Email",
@@ -203,8 +214,9 @@ class _SignUpState extends State<SignUp> {
                       // Widget SizedBox para añadir un espacio vertical de 15 píxeles.
                       const SizedBox(height: 15),
             
-                      // Widget TextFormField para el campo Email.
+                      // Widget TextFormField para el campo Telefono.
                       TextFormField(
+                        controller: telefonoController,//controaldor API
                         // Define la decoración del campo, incluyendo la etiqueta, el estilo de la etiqueta, el borde y el icono.
                         decoration: const InputDecoration(
                           labelText: "Nº Teléfono",
@@ -227,6 +239,7 @@ class _SignUpState extends State<SignUp> {
                       ElevatedButton(
                         onPressed: () {
                           // Acción al presionar "Registrarme"
+                          registrarUsuario();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.lightBlueAccent,
@@ -250,4 +263,33 @@ class _SignUpState extends State<SignUp> {
       ),
     );
   }
+  Future<void> registrarUsuario() async {
+  final url = Uri.parse('http://10.0.2.2:8080/usuarios'); // Cambia la URL si usas dispositivo físico
+
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      "dni": dniController.text,
+      "nombre": nombreController.text,
+      "apellidos": apellidosController.text,
+      "email": emailController.text,
+      "telefono": telefonoController.text,
+      "contrasena": contrasenaController.text,
+    }),
+  );
+
+  if (response.statusCode == 201) {
+    // Usuario creado correctamente
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('¡Usuario registrado con éxito!'))
+    );
+    // Posible acción de navegación de vuelta al Login(por ahora ha fallado)
+  } else {
+    // Error al registrar
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error: ${response.statusCode} - ${response.body}'))    
+    );
+  }
+}
 }

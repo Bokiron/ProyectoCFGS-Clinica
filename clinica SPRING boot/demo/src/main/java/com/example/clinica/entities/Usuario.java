@@ -1,5 +1,4 @@
 package com.example.clinica.entities;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +11,6 @@ public class Usuario {
 
     @Id
     private String dni; // Clave primaria
-
     private String nombre;
     private String apellidos;
     private String email;
@@ -21,7 +19,6 @@ public class Usuario {
 
     @Enumerated(EnumType.STRING)
     private Rol rol;
-
     public enum Rol {
         USUARIO, ADMIN
     }

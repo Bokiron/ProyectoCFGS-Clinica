@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:clinica_app/pages/ChangePassword.dart';
 import 'package:clinica_app/pages/Inicio.dart';
 import 'package:clinica_app/pages/SignUp.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -12,8 +15,9 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   bool rememberMe = false; // Estado del checkbox para recordar sesión
-    bool _obscureText = true; // Added to manage password visibility
-
+  bool _obscureText = true; // Added to manage password visibility
+  final usuarioController = TextEditingController();
+  final contrasenaController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -48,6 +52,7 @@ class _LoginState extends State<Login> {
 
                     // Campo DNI/NIE o Email
                     TextFormField(
+                      controller: usuarioController,
                       decoration: const InputDecoration(
                         labelText: "DNI/N.I.F o E-Mail",
                         labelStyle: TextStyle(color: Colors.white),
@@ -70,6 +75,7 @@ class _LoginState extends State<Login> {
 
                     // Campo Contraseña
                     TextFormField(
+                      controller: contrasenaController,
                       obscureText: _obscureText,
                       decoration: InputDecoration(
                         labelText: "Contraseña",
@@ -145,10 +151,7 @@ class _LoginState extends State<Login> {
                       ElevatedButton(
                         onPressed: () {
                           // Acción de inicio de sesión
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => Inicio()),
-                          );
+                          loginUsuario();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.lightBlueAccent,
@@ -195,4 +198,28 @@ class _LoginState extends State<Login> {
       ],
     );
   }
+  Future<void> loginUsuario() async {
+  final url = Uri.parse('http://10.0.2.2:8080/usuarios/login');
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      "dniOrEmail": usuarioController.text,
+      "contrasena": contrasenaController.text,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    // Login correcto
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => Inicio()),
+    );
+  } else {
+    // Login incorrecto
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error: ${response.statusCode} - ${response.body}'))  
+    );
+  }
+}
 }

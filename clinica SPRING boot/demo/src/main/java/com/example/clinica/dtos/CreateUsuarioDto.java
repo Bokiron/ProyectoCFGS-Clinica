@@ -1,5 +1,4 @@
 package com.example.clinica.dtos;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,7 +22,8 @@ public class CreateUsuarioDto {
     private String email;
     @NotBlank(message = "telefono es obligatorio")
     private String telefono;
-    @NotBlank(message = "rol es obligatorio")
-    private String rol; 
+    @NotBlank(message = "contraseña es obligatoria") // Campo nuevo
+    private String contrasena; 
 
+    //ausencia del campo 'Rol' para que no pueda ser enviado por el cliente
 }

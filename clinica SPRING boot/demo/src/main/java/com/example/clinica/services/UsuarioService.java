@@ -3,9 +3,7 @@ package com.example.clinica.services;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
-
 import com.example.clinica.dtos.CreateUsuarioDto;
 import com.example.clinica.dtos.GetUsuarioDto;
 import com.example.clinica.entities.Usuario;
@@ -32,9 +30,25 @@ public class UsuarioService {
                 .collect(Collectors.toList());
     }
 
-    // Obtener un usuario por ID
+    // Obtener un usuario por DNI
     public Optional<GetUsuarioDto> getUsuarioByDni(String dni) {
         return usuarioRepository.findByDni(dni).map(usuarioMapper::toGetUsuarioDto);
+    }
+
+    // Obtener un usuario por email
+    public Optional<GetUsuarioDto> getUsuarioByEmail(String email) {
+        return usuarioRepository.findByEmail(email).map(usuarioMapper::toGetUsuarioDto);
+    }
+
+    //OBtener usuario por email o DNI
+    public Optional<Usuario> findByDniOrEmail(String dniOrEmail) {
+        // Busca primero por DNI, si no encuentra, busca por email
+        Optional<Usuario> usuario = usuarioRepository.findByDni(dniOrEmail);
+        if (usuario.isPresent()) {
+            return usuario;
+        } else {
+            return usuarioRepository.findByEmail(dniOrEmail);
+        }
     }
 
     // Crear un nuevo usuario
@@ -52,6 +66,13 @@ public class UsuarioService {
             return usuarioRepository.save(usuario);
         });
     }
+    //actualizar el rol de los usuarios
+    public Optional<Usuario> updateUsuarioRol(String dni, Usuario.Rol nuevoRol) {
+    return usuarioRepository.findByDni(dni).map(usuario -> {
+        usuario.setRol(nuevoRol);
+        return usuarioRepository.save(usuario);
+    });
+}
 
     // Eliminar un usuario
     public boolean deleteUsuario(String dni) {
