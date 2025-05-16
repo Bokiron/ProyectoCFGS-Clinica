@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:clinica_app/pages/MascotasScreen.dart';
 import 'package:clinica_app/pages/PedirCita.dart';
 import 'package:clinica_app/pages/TiendaScreen.dart';
+import 'package:clinica_app/pages/UsuarioInfoScreen.dart';
 import 'package:flutter/material.dart';
 
 class Inicio extends StatefulWidget {
@@ -36,7 +37,12 @@ class _InicioState extends State<Inicio> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.person, color: Colors.white, size: 32),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const UsuarioInfoPage()),
+                      );
+                    },
                   ),
                   Image.asset(
                     "lib/assets/letrasClinica.png",

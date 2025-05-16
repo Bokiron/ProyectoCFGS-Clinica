@@ -14,11 +14,19 @@ public class SecurityConfig {
         http
             .csrf().disable()
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.POST, "/usuarios", "usuarios/login").permitAll() // <-- Permite registro público
+                // Permitir registro y login sin autenticación
+                .requestMatchers(HttpMethod.POST, "/usuarios", "/usuarios/login", "/mascotas", "/mascotas/*/imagen").permitAll()
+                // Permitir acceso a GET /usuarios/{dni} sin autenticación
+                .requestMatchers(HttpMethod.GET, "/usuarios/**", "/mascotas/buscar").permitAll()
+                //permitir que se acceda a las imagenes
+                .requestMatchers("/*.jpg", "/*.png", "/*.jpeg").permitAll()
+                // Todas las demás rutas requieren autenticación
                 .anyRequest().authenticated()
             )
-            .httpBasic();
+            .httpBasic(); // Opcional: si usas autenticación básica
+
         return http.build();
     }
 }
+
 

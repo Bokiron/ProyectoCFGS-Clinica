@@ -1,10 +1,10 @@
 import 'dart:convert';
-
 import 'package:clinica_app/pages/ChangePassword.dart';
 import 'package:clinica_app/pages/Inicio.dart';
 import 'package:clinica_app/pages/SignUp.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -198,8 +198,14 @@ class _LoginState extends State<Login> {
       ],
     );
   }
+
+  Future<void> guardarDnioEmailUsuario(String dni) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('dni_usuario', dni);
+  }
+
   Future<void> loginUsuario() async {
-  final url = Uri.parse('http://10.0.2.2:8080/usuarios/login');
+  final url = Uri.parse('http://192.168.1.131:8080/usuarios/login');
   final response = await http.post(
     url,
     headers: {'Content-Type': 'application/json'},
@@ -210,6 +216,7 @@ class _LoginState extends State<Login> {
   );
 
   if (response.statusCode == 200) {
+    await guardarDnioEmailUsuario(usuarioController.text.trim());//guardar dni del usuario
     // Login correcto
     Navigator.pushReplacement(
       context,

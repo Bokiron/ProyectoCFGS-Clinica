@@ -1,7 +1,7 @@
 package com.example.clinica.controllers;
+
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.clinica.dtos.CreateUsuarioDto;
 import com.example.clinica.dtos.GetUsuarioDto;
@@ -43,6 +44,14 @@ public class UsuarioController {
     @GetMapping("/{dni}")
     public ResponseEntity<GetUsuarioDto> getUsuarioById(@PathVariable String dni) {
         return usuarioService.getUsuarioByDni(dni)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+    // Obtener usuario por DNI o email usando un parámetro de consulta. Ruta localhost:8080/usuarios/buscar?dniOrEmail=1@1.com
+    @GetMapping("/buscar")
+    public ResponseEntity<GetUsuarioDto> getUsuarioByDniOrEmail(@RequestParam String dniOrEmail) {
+        return usuarioService.findByDniOrEmail(dniOrEmail)
+                .map(usuarioMapper::toGetUsuarioDto)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
