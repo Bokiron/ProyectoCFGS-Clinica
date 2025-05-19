@@ -12,18 +12,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf().disable()
-            .authorizeHttpRequests(auth -> auth
-                // Permitir registro y login sin autenticación
-                .requestMatchers(HttpMethod.POST, "/usuarios", "/usuarios/login", "/mascotas", "/mascotas/*/imagen").permitAll()
-                // Permitir acceso a GET /usuarios/{dni} sin autenticación
-                .requestMatchers(HttpMethod.GET, "/usuarios/**", "/mascotas/buscar").permitAll()
-                //permitir que se acceda a las imagenes
-                .requestMatchers("/*.jpg", "/*.png", "/*.jpeg").permitAll()
-                // Todas las demás rutas requieren autenticación
-                .anyRequest().authenticated()
-            )
-            .httpBasic(); // Opcional: si usas autenticación básica
+    .csrf().disable()
+    .authorizeHttpRequests(auth -> auth
+        // Permitir registro y login sin autenticación
+        .requestMatchers(HttpMethod.POST, "/usuarios", "/usuarios/login", "/mascotas", "/mascotas/*/imagen", "/citas").permitAll()
+        // Permitir acceso a GET /usuarios/{dni} y /mascotas/buscar sin autenticación
+        .requestMatchers(HttpMethod.GET, "/usuarios/**", "/mascotas/buscar").permitAll()
+        // Permitir acceso público a los servicios
+        .requestMatchers(HttpMethod.GET, "/servicios", "/servicios/**").permitAll()
+        // Permitir que se acceda a las imágenes
+        .requestMatchers("/*.jpg", "/*.png", "/*.jpeg").permitAll()
+        // Todas las demás rutas requieren autenticación
+        .anyRequest().authenticated()
+    )
+    .httpBasic();// Opcional: si usas autenticación básica
 
         return http.build();
     }

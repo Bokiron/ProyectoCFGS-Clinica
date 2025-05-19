@@ -1,7 +1,6 @@
 package com.example.clinica.controllers;
 
 import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,10 +10,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.clinica.dtos.CreateServicioDto;
 import com.example.clinica.dtos.GetServicioDto;
+import com.example.clinica.entities.Cita.Espacio;
 import com.example.clinica.entities.Servicio;
 import com.example.clinica.services.ServicioService;
 
@@ -29,9 +29,13 @@ public class ServicioController {
         this.servicioService = servicioService;
     }
 
-    // Obtener todos los servicios
+    // Obtener todos los servicios o filtrar por espacioServicio
     @GetMapping
-    public List<GetServicioDto> getAllServicios() {
+    public List<GetServicioDto> getServicios(@RequestParam(required = false) String espacioServicio) {
+        if (espacioServicio != null) {
+            Espacio espacio = Espacio.valueOf(espacioServicio.toUpperCase());
+            return servicioService.getServiciosByEspacio(espacio);
+        }
         return servicioService.getAllServicios();
     }
 
@@ -62,10 +66,14 @@ public class ServicioController {
     // Eliminar un servicio
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteServicio(@PathVariable Long id) {
-        if (servicioService.deleteServicio(id)) {
-            return ResponseEntity.noContent().build();
+        try {
+            if (servicioService.deleteServicio(id)) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.notFound().build();
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409 Conflict
         }
-        return ResponseEntity.notFound().build();
     }
 }
 

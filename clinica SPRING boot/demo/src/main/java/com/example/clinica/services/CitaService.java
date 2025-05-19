@@ -12,6 +12,7 @@ import com.example.clinica.dtos.GetCitaDto;
 import com.example.clinica.entities.Cita;
 import com.example.clinica.entities.Mascota;
 import com.example.clinica.entities.Servicio;
+import com.example.clinica.entities.Usuario;
 import com.example.clinica.mappers.CitaMapper;
 import com.example.clinica.repositories.CitaRepository;
 
@@ -41,8 +42,8 @@ public class CitaService {
     }
 
     // Crea una nueva cita con los datos proporcionados
-    public Cita createCita(CreateCitaDto dto, Mascota mascota, Servicio servicio) {
-        Cita nuevaCita = citaMapper.toCita(dto, mascota, servicio); // Convierte el DTO a entidad
+    public Cita createCita(CreateCitaDto dto, Mascota mascota, Servicio servicio, Usuario usuario) {
+        Cita nuevaCita = citaMapper.toCita(dto, mascota, servicio, usuario); // Convierte el DTO a entidad
         return citaRepository.save(nuevaCita); // Guarda en la base de datos y retorna la cita creada
     }
 
