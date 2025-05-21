@@ -14,17 +14,16 @@ class Pedircita extends StatefulWidget {
 
 class PedircitaState extends State<Pedircita> {
   DateTime _fechaSeleccionada = DateTime.now();
-  // Horarios fijos por espacio
-  final List<String> horasPeluqueria = [
-    '10:00', '11:00', '12:00', '13:00', '17:00', '18:00'
-  ];
-  final List<String> horasConsulta = [
-    '9:30', '10:30', '11:30', '12:30', '16:30', '17:30', '18:30'
-  ];
 
   List<String> get horasDisponibles {
-    return _selectedEspacio == 0 ? horasConsulta : horasPeluqueria;
-  }
+  return _selectedEspacio == 0 
+      ? ["09:30", "10:30", "11:30", "12:30", "16:30", "17:30", "18:30"]//horas consulta
+      : ["10:00", "11:00", "12:00", "13:00", "17:00", "18:00"];//horas peluqueria
+}
+
+  List<String> horasOcupadas = [];
+  List<String> horasLibres = [];
+
   int _selectedEspacio = 0; // 0: Peluquería, 1: Consulta
   //variables para la reserva de la cita
   String motivo = ''; // Variable de estado para el motivo
@@ -41,6 +40,7 @@ class PedircitaState extends State<Pedircita> {
   @override
   void initState() {
     super.initState();
+    cargarHorasOcupadas();
     cargarDatosUsuarioYmascotas();
     loadServicios();
   }
@@ -74,6 +74,7 @@ class PedircitaState extends State<Pedircita> {
                         setState(() {
                           _selectedEspacio = 0;
                         });
+                        cargarHorasOcupadas();
                         loadServicios();
                       },
                       child: Container(
@@ -102,6 +103,7 @@ class PedircitaState extends State<Pedircita> {
                         setState(() {
                           _selectedEspacio = 1;
                         });
+                        cargarHorasOcupadas();
                         loadServicios();
                       },
                       child: Container(
@@ -141,7 +143,8 @@ class PedircitaState extends State<Pedircita> {
                   setState(() {
                     _fechaSeleccionada = selectedDay;
                   });
-                  // Aquí podrías recargar horas según el día y el espacio seleccionado
+                  // Recarga las horas según dia y espacio seleccionado
+                  cargarHorasOcupadas();
                 },
                 selectedDayPredicate: (day) {
                   return isSameDay(_fechaSeleccionada, day);
@@ -170,9 +173,16 @@ class PedircitaState extends State<Pedircita> {
 
             // --- Lista de horas disponibles ---
             Expanded(
-              child: ListView.builder(
+              child: horasLibres.isEmpty
+              ? Center(
+                  child: Text(
+                    "No hay horas disponibles para este día.",
+                    style: TextStyle(fontSize: 18, color: Colors.redAccent),
+                  ),
+                )
+              : ListView.builder(
                 padding: const EdgeInsets.symmetric(vertical: 4),
-                itemCount: horasDisponibles.length,
+                itemCount: horasLibres.length,
                 itemBuilder: (context, index) {
                   return Container(
                     margin: const EdgeInsets.symmetric(vertical: 5),
@@ -186,7 +196,7 @@ class PedircitaState extends State<Pedircita> {
                         color: Colors.lightBlueAccent,
                       ),
                       title: Text(
-                        horasDisponibles[index],
+                        horasLibres[index],
                         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                       ),
                       // --- Botón para reservar la hora seleccionada ---
@@ -293,7 +303,7 @@ class PedircitaState extends State<Pedircita> {
                                           try{
 
                                           
-                                          final horaSeleccionada = horasDisponibles[index]; //Variable para la hora Ej: "10:00"
+                                          final horaSeleccionada = horasLibres[index]; //Variable para la hora Ej: "10:00"
                                           final fecha = "${_fechaSeleccionada.day.toString().padLeft(2, '0')}/"
                                           "${_fechaSeleccionada.month.toString().padLeft(2, '0')}/"
                                           "${_fechaSeleccionada.year}"; // Formato dd/MM/yyyy
@@ -336,6 +346,8 @@ class PedircitaState extends State<Pedircita> {
                                             headers: {'Content-Type': 'application/json'},
                                             body: body,
                                           );
+
+                                          cargarHorasOcupadas();//cargar horas ocupadas al reservar una cita para que desaparezca
 
                                           Navigator.pop(context);
                                           if (response.statusCode == 201) {
@@ -476,15 +488,45 @@ class PedircitaState extends State<Pedircita> {
     }
   }
 
-  //función para juntar la fecha y hora. Para enviar al backend
-  DateTime _combinarFechaYHora(DateTime fecha, String hora) {
-    final partesHora = hora.split(':');
-    return DateTime(
-      fecha.year,
-      fecha.month,
-      fecha.day,
-      int.parse(partesHora[0]),
-      int.parse(partesHora[1]),
-    );
+  //metodo para saber horas ocupadas
+  Future<void> cargarHorasOcupadas() async {
+    final espacio = _selectedEspacio == 0 ? 'CONSULTA' : 'PELUQUERIA';
+    final fechaFormateada = "${_fechaSeleccionada.day.toString().padLeft(2, '0')}/"
+        "${_fechaSeleccionada.month.toString().padLeft(2, '0')}/"
+        "${_fechaSeleccionada.year}";
+
+    print("[DEBUG] Consultando horas ocupadas para $fechaFormateada y $espacio");
+    print("[DEBUG] Horas posibles: $horasDisponibles");
+
+    try {
+      final response = await http.get(
+        Uri.parse('http://192.168.1.131:8080/citas/ocupadas?fecha=$fechaFormateada&espacio=$espacio'),
+      );
+      print("[DEBUG] Status code: ${response.statusCode}");
+      print("[DEBUG] Response body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final ocupadas = List<String>.from(jsonDecode(response.body));
+        print("[DEBUG] Horas ocupadas recibidas: $ocupadas");
+        setState(() {
+          horasOcupadas = ocupadas;
+          horasLibres = horasDisponibles.where((h) => !horasOcupadas.contains(h)).toList();
+          print("[DEBUG] Horas libres calculadas: $horasLibres");
+        });
+      } else {
+        setState(() {
+          horasOcupadas = [];
+          horasLibres = horasDisponibles;
+        });
+        print("[DEBUG] Error al consultar horas ocupadas. Se muestran todas como libres.");
+      }
+    } catch (e) {
+      setState(() {
+        horasOcupadas = [];
+        horasLibres = horasDisponibles;
+      });
+      print('[DEBUG] Excepción al consultar horas ocupadas: $e');
+    }
   }
+
 }

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:clinica_app/pages/CitasScreen.dart';
 import 'package:clinica_app/pages/MascotasScreen.dart';
 import 'package:clinica_app/pages/PedirCita.dart';
 import 'package:clinica_app/pages/TiendaScreen.dart';
@@ -193,7 +194,13 @@ class _InicioState extends State<Inicio> {
                         child: _circleMenuButton(
                           imagePath: "lib/assets/icon_citas.png", // Ruta a tu imagen
                           label: "Citas",
-                          onTap: () {},
+                          onTap: () {
+                            // Acción de navegación
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => CitasScreen()),
+                            );
+                          },
                         ),
                       ),
                       // Tienda con imagen

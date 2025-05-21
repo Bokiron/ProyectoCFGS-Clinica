@@ -1,22 +1,30 @@
 package com.example.clinica.controllers;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.clinica.dtos.CreateCitaDto;
 import com.example.clinica.dtos.GetCitaDto;
+import com.example.clinica.dtos.UpdateCitaDto;
 import com.example.clinica.entities.Cita;
 import com.example.clinica.entities.Mascota;
 import com.example.clinica.entities.Servicio;
 import com.example.clinica.entities.Usuario;
+import com.example.clinica.repositories.CitaRepository;
 import com.example.clinica.repositories.MascotaRepository;
 import com.example.clinica.repositories.ServicioRepository;
 import com.example.clinica.repositories.UsuarioRepository;
@@ -30,12 +38,14 @@ public class CitaController {
     private final MascotaRepository mascotaRepository;
     private final ServicioRepository servicioRepository;
     private final UsuarioRepository usuarioRepository;
+    private final CitaRepository citaRepository;
     // Constructor que inyecta los servicios y repositorios necesarios
-    public CitaController(CitaService citaService, MascotaRepository mascotaRepository, ServicioRepository servicioRepository, UsuarioRepository usuarioRepository) {
+    public CitaController(CitaService citaService, MascotaRepository mascotaRepository, ServicioRepository servicioRepository, UsuarioRepository usuarioRepository, CitaRepository citaRepository) {
         this.citaService = citaService;
         this.mascotaRepository = mascotaRepository;
         this.servicioRepository = servicioRepository;
         this.usuarioRepository = usuarioRepository;
+        this.citaRepository = citaRepository;
     }
 
     @GetMapping // Maneja solicitudes GET para obtener todas las citas
@@ -48,6 +58,34 @@ public class CitaController {
         return citaService.getCitaById(id) // Busca la cita por ID
                 .map(ResponseEntity::ok) // Si se encuentra, retorna 200 OK con la cita
                 .orElseGet(() -> ResponseEntity.notFound().build()); // Si no se encuentra, retorna 404
+    }
+
+    @GetMapping("/usuario/{dni}")
+    public List<GetCitaDto> getCitasByUsuario(@PathVariable String dni) {
+        return citaService.getCitasByUsuario(dni);
+    }
+
+
+    @GetMapping("/ocupadas")
+    public List<String> getHorasOcupadas(
+        @RequestParam String fecha,
+        @RequestParam String espacio
+    ) {
+        // Parsear la fecha
+        LocalDate dia = LocalDate.parse(fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        //start y end para buscar desde el inicio hasta el fin del dia
+        LocalDateTime start = dia.atStartOfDay();
+        LocalDateTime end = dia.atTime(LocalTime.MAX);
+        //Importante .trim para eliminar cualquier espacio en blanco y upperCase para asegurar que se pasa en mayusculas
+        Cita.Espacio espacioEnum = Cita.Espacio.valueOf(espacio.trim().toUpperCase());
+
+        // Buscar citas en ese día y espacio
+        List<Cita> citas = citaRepository.findByEspacioAndFechaCitaBetween(espacioEnum, start, end);
+
+        // Devolver solo las horas ocupadas como strings "HH:mm"
+        return citas.stream()
+            .map(c -> c.getFechaCita().toLocalTime().toString().substring(0,5)) // "HH:mm"
+            .toList();
     }
 
     @PostMapping // Maneja solicitudes POST para crear una nueva cita
@@ -79,6 +117,16 @@ public class CitaController {
         return citaService.updateCita(id, dto, mascota, servicio) // Llama al servicio para actualizar
                 .map(cita -> ResponseEntity.ok(citaService.getCitaById(cita.getId()).orElse(null))) // Retorna 200 OK con la cita actualizada
                 .orElseGet(() -> ResponseEntity.notFound().build()); // Retorna 404 si no se encuentra la cita
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<GetCitaDto> updateCitaParcial(
+        @PathVariable Long id,
+        @RequestBody UpdateCitaDto dto
+    ) {
+        return citaService.updateCitaParcial(id, dto)
+            .map(cita -> ResponseEntity.ok(citaService.getCitaById(cita.getId()).orElse(null)))
+            .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}") // Maneja solicitudes DELETE para eliminar una cita por su ID
