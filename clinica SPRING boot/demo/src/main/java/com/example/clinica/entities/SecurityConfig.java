@@ -19,7 +19,7 @@ public class SecurityConfig {
         // Permitir acceso a GET /usuarios/{dni} y /mascotas/buscar sin autenticación
         .requestMatchers(HttpMethod.GET, "/usuarios/**", "/mascotas/buscar", "/citas/ocupadas", "/citas/usuario/*").permitAll()
         // Permitir acceso público a los servicios
-        .requestMatchers(HttpMethod.GET, "/servicios", "/servicios/**").permitAll()
+        .requestMatchers(HttpMethod.GET, "/servicios", "/servicios/**", "/productos").permitAll()
         //Permitir actualizar citas
         .requestMatchers(HttpMethod.PATCH, "/citas/**").permitAll()
 

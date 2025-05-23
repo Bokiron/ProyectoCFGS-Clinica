@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class ProductoDestacadoCard extends StatelessWidget {
   final String nombre;
-  final String subtitulo;
+  final String categoria;
   final String precio;
   final String imagen;
   final String descripcion;
@@ -13,7 +13,7 @@ class ProductoDestacadoCard extends StatelessWidget {
   const ProductoDestacadoCard({
     super.key,
     required this.nombre,
-    required this.subtitulo,
+    required this.categoria,
     required this.precio,
     required this.imagen,
     required this.descripcion,
@@ -30,7 +30,7 @@ class ProductoDestacadoCard extends StatelessWidget {
           MaterialPageRoute(
             builder: (_) => DetalleProductoScreen(
               nombre: nombre,
-              categoria: subtitulo,
+              categoria: categoria,
               precio: precio,
               imagen: imagen,
               descripcion: descripcion,
@@ -68,6 +68,8 @@ class ProductoDestacadoCard extends StatelessWidget {
                   width: 70,
                   height: 55,
                   fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) => 
+                      Icon(Icons.image_not_supported, size: 50, color: Colors.grey),
                 ),
               ),
             ),
@@ -83,7 +85,7 @@ class ProductoDestacadoCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             Text(
-              subtitulo,
+              categoria,
               style: const TextStyle(
                 color: Colors.black54,
                 fontSize: 12,

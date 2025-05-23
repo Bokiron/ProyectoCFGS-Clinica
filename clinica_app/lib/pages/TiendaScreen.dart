@@ -1,5 +1,8 @@
+import 'dart:convert';
+import 'package:clinica_app/pages/ResultadosBusquedaScreen.dart';
 import 'package:clinica_app/pages/TarjetaProductosTienda.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Tienda extends StatefulWidget {
   const Tienda({super.key});
@@ -9,7 +12,7 @@ class Tienda extends StatefulWidget {
 }
 
 class _TiendaState extends State<Tienda> {
-  String? especieSeleccionada = "Perro"; // Valor inicial
+  String? especieSeleccionada; // Valor inicial
   String? categoriaSeleccionada;
   // Datos de ejemplo para los filtros principales
   final List<Map<String, String>> filtros = [
@@ -23,7 +26,7 @@ class _TiendaState extends State<Tienda> {
     },
     {
       "titulo": "Royal Canin",
-      "img": "https://www.piensosraposo.es/2551-large_default/royal-canin-kitten-10-kg.jpg"
+      "img": "https://1000logos.net/wp-content/uploads/2020/07/Royal-Canin-Logo.png"
     },
     {
       "titulo": "Bayer",
@@ -61,61 +64,133 @@ class _TiendaState extends State<Tienda> {
       "titulo": "Higiene",
       "img": "https://www.dingonatura.com/wp-content/uploads/2019/10/AdobeStock_197601740._._._-1024x683.jpg"
     },
+    {
+      "titulo": "Juguetes",
+      "img": "https://www.dingonatura.com/wp-content/uploads/2019/10/AdobeStock_197601740._._._-1024x683.jpg"
+    },
+    
   ];
+  //mapeo para enviar las categorias correctamente al backend
+  Map<String, String> categoriaToEnum = {
+    "Alimentación": "ALIMENTACION",
+    "Antiinflamatorio": "ANTIINFLAMATORIO",
+    "Arenas": "ARENAS",
+    "Antiparasitario": "ANTIPARASITARIO",
+    "Complemento nutricional": "COMPLEMENTO_NUTRICIONAL",
+    "Dermatología": "DERMATOLOGIA",
+    "Higiene": "HIGIENE",
+    "Juguetes": "JUGUETES",
+  };
+  //mapeo para enviar las especies correctamente al backend
+  Map<String, String> especieToEnum = {
+    "Perros": "PERRO",
+    "Gatos": "GATO",
+    "Conejos" : "CONEJO",
+    "Loros" : "LOROS"
+    // Si añades más especies populares, agrégalas aquí.
+  };
 
   // Lista de productos destacados (puedes ponerla en tu _TiendaState)
-final List<Map<String, dynamic>> productosDestacados = [
-  {
-    "nombre": "PRONEFRA",
-    "subtitulo": "Complemento nutricional",
-    "precio": "Desde 27 €",
-    "imagen": "https://www.piensosraposo.es/2551-large_default/royal-canin-kitten-10-kg.jpg",
-    "descripcion": "Recomendado para perros y gatos ayuda de la función renal en caso de insuficiencia renal crónica.",
-    "especies" : ["Gato"],
-    "marca" : "Royal Canin",
-  },
-  {
-    "nombre": "Stomaferin ultra",
-    "subtitulo": "Higiene",
-    "precio": "27.99 €",
-    "imagen": "https://www.piensosraposo.es/2551-large_default/royal-canin-kitten-10-kg.jpg",
-    "descripcion": "Solución para la higiene bucal de perros y gatos.",
-    "especies" : ["Gato"],
-    "marca" : "Royal Canin",
+  List<Map<String, dynamic>> productosApi = [];
+  bool loadingProductos = true;
 
-  },
-  {
-    "nombre": "PRONEFRA",
-    "subtitulo": "Complemento nutricional",
-    "precio": "Desde 27 €",
-    "imagen": "https://www.piensosraposo.es/2551-large_default/royal-canin-kitten-10-kg.jpg",
-    "descripcion": "Recomendado para perros y gatos ayuda de la función renal en caso de insuficiencia renal crónica. ",
-    "especies" : ["Perro"],
-    "marca" : "Eukanuba",
+  @override
+  void initState() {
+    super.initState();
+    cargarProductosDesdeApi();
+  }
 
-  },
-  {
-    "nombre": "Stomaferin ultra",
-    "subtitulo": "Higiene",
-    "precio": "27.99 €",
-    "imagen": "https://www.piensosraposo.es/2551-large_default/royal-canin-kitten-10-kg.jpg",
-    "descripcion": "Solución para la higiene bucal de perros y gatos.",
-    "especies" : ["Gato"],
-    "marca" : "Eukanuba",
+  Future<void> cargarProductosDesdeApi() async {
+    setState(() { loadingProductos = true; });
+    try {
+      final response = await http.get(Uri.parse('http://192.168.1.131:8080/productos'));
+      print("Respuesta status: ${response.statusCode}");
+      print("Respuesta body: ${response.body}");
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        print("Productos decodificados: $data");
+        setState(() {
+          productosApi = data.map<Map<String, dynamic>>((item) => item as Map<String, dynamic>).toList();
+          loadingProductos = false;
+        });
+        print("productosApi.length: ${productosApi.length}");
+      } else {
+        setState(() { loadingProductos = false; });
+        print("Error: status code diferente de 200");
+      }
+    } catch (e) {
+      setState(() { loadingProductos = false; });
+      print("Excepción al cargar productos: $e");
+    }
+  }
+  //filtro para obtener los productos por 1 criterio de búsqueda
+// Método para obtener productos filtrados por un criterio (especie, categoría o marca)
+Future<List<Map<String, dynamic>>> filtrarYObtenerProductos(String filtro, String valor) async {
+  setState(() { loadingProductos = true; }); // Activa el indicador de carga
+  try {
+    // Realiza la petición HTTP al backend con el filtro y el valor correspondiente
+    final response = await http.get(
+      Uri.parse('http://192.168.1.131:8080/productos?$filtro=$valor'),
+    );
+    if (response.statusCode == 200) {
+      // Si la respuesta es exitosa, decodifica el JSON y convierte cada producto a Map
+      final List<dynamic> data = json.decode(response.body);
+      return data.map<Map<String, dynamic>>((item) => item as Map<String, dynamic>).toList();
+    }
+  } catch (e) {
+    // Manejo de errores (por ejemplo, si falla la conexión)
+  }
+  return []; // Retorna lista vacía si hay error o no hay resultados
+}
 
-  },
-  {
-    "nombre": "Stomaferin ultra",
-    "subtitulo": "Higiene",
-    "precio": "27.99 €",
-    "imagen": "https://www.piensosraposo.es/2551-large_default/royal-canin-kitten-10-kg.jpg",
-    "descripcion": "Solución para la higiene bucal de perros y gatos.",
-    "especies" : ["Perro"],
-    "marca" : "Eukanuba",
+//metodo para el buscador avanzado, es decir por especie y ctaegoria
+Future<void> buscarProductosAvanzado(BuildContext context) async {
+  // Construir los parámetros de la URL según lo seleccionado
+  List<String> params = [];
+  if (especieSeleccionada != null && especieToEnum[especieSeleccionada!] != null) {
+    params.add('especies=${especieToEnum[especieSeleccionada!]}');
+  }
+  if (categoriaSeleccionada != null && categoriaToEnum[categoriaSeleccionada!] != null) {
+    params.add('categoria=${categoriaToEnum[categoriaSeleccionada!]}');
+  }
+  // Si no hay ningún criterio, puedes mostrar un mensaje y salir
+  if (params.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Selecciona al menos un criterio de búsqueda.')),
+    );
+    return;
+  }
+  final url = 'http://192.168.1.131:8080/productos?${params.join('&')}';
 
-  },
-  // ...añade más productos si quieres
-];
+  // Llamada HTTP
+  final response = await http.get(Uri.parse(url));
+  if (response.statusCode == 200) {
+    final List<dynamic> data = json.decode(response.body);
+    final productos = data.map<Map<String, dynamic>>((item) => item as Map<String, dynamic>).toList();
+
+    // Construir chips de criterios seleccionados
+    List<Widget> chips = [];
+    if (especieSeleccionada != null) {
+      chips.add(Chip(label: Text(especieSeleccionada!)));
+    }
+    if (categoriaSeleccionada != null) {
+      chips.add(Chip(label: Text(categoriaSeleccionada!)));
+    }
+
+    // Navega a la pantalla de resultados
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ResultadosBusquedaScreen(
+          productos: productos,
+          chipsCriterios: chips,
+        ),
+      ),
+    );
+  }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -156,9 +231,50 @@ final List<Map<String, dynamic>> productosDestacados = [
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
                       child: GestureDetector(
-                        onTap: () {
-                          // Acción de filtro
-                        },
+                        onTap: () async {
+                        // Acción de filtro cuando se pulsa un filtro de la primera fila(gatos, perros y marcas)
+
+                        // 1. Verifica si el filtro es una especie (usando el mapa especieToEnum)
+                        final String? especieEnum = especieToEnum[filtro["titulo"]!];
+                        // 2. Lista de marcas disponibles para filtros rápidos
+                        final List<String> marcas = ["Royal Canin", "Bayer"]; // Actualiza con las marcas de tu app
+                        final bool esMarca = marcas.contains(filtro["titulo"]!);
+
+                        // Lógica de filtrado y navegación
+                        if (especieEnum != null) {
+                          // Si es una especie, filtra los productos y navega a la pantalla de resultados
+                          final productos = await filtrarYObtenerProductos('especies', especieEnum);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ResultadosBusquedaScreen(
+                                productos: productos,
+                                chipsCriterios: [
+                                  Chip(label: Text(filtro["titulo"]!)), // Muestra el criterio seleccionado como chip
+                                ],
+                              ),
+                            ),
+                          );
+                          // Al volver, recarga productos destacados
+                          cargarProductosDesdeApi();
+                        } else if (esMarca) {
+                          // Si es una marca, filtra los productos y navega a la pantalla de resultados
+                          final productos = await filtrarYObtenerProductos('marca', filtro["titulo"]!);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ResultadosBusquedaScreen(
+                                productos: productos,
+                                chipsCriterios: [
+                                  Chip(label: Text(filtro["titulo"]!)), // Muestra el criterio seleccionado como chip
+                                ],
+                              ),
+                            ),
+                          );
+                          // Al volver, recarga productos destacados
+                          cargarProductosDesdeApi();
+                        }
+                      },
                         child: Container(
                           width: 140,
                           decoration: BoxDecoration(
@@ -217,8 +333,28 @@ final List<Map<String, dynamic>> productosDestacados = [
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
                     child: GestureDetector(
-                      onTap: () {
-                      // Acción de filtro por categoría
+                      onTap: () async {
+                        // Acción de filtro cuando se pulsa una categoría
+
+                        // 1. Verifica si la categoría existe en el mapa categoriaToEnum
+                        final String? categoriaEnum = categoriaToEnum[cat["titulo"]!];
+                        if (categoriaEnum != null) {
+                          // Si existe, filtra los productos y navega a la pantalla de resultados
+                          final productos = await filtrarYObtenerProductos('categoria', categoriaEnum);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ResultadosBusquedaScreen(
+                                productos: productos,
+                                chipsCriterios: [
+                                  Chip(label: Text(cat["titulo"]!)), // Muestra el criterio seleccionado como chip
+                                ],
+                              ),
+                            ),
+                          );
+                          // Al volver, recarga productos destacados
+                          cargarProductosDesdeApi();
+                        }
                       },
                       child: Container(
                         width: 240,
@@ -284,7 +420,7 @@ final List<Map<String, dynamic>> productosDestacados = [
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Título más pequeño y minimalista
+                // Título del buscador avanzado
                 const Text(
                   "Buscador de productos",
                   style: TextStyle(
@@ -295,10 +431,11 @@ final List<Map<String, dynamic>> productosDestacados = [
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
-                // Dropdown de especie
+
+                // Dropdown para seleccionar especie
                 DropdownButtonFormField<String>(
                   decoration: InputDecoration(
-                    labelText: "Seleccionar especie",
+                    labelText: "Seleccionar especie", // Texto que aparece como hint cuando no hay selección
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
@@ -306,21 +443,42 @@ final List<Map<String, dynamic>> productosDestacados = [
                     isDense: true, // Hace el campo más compacto
                   ),
                   style: const TextStyle(fontSize: 14, color: Colors.black),
-                  value: especieSeleccionada,
-                  items: ["Perro", "Gato"]
-                      .map((especie) => DropdownMenuItem(
-                            value: especie,
-                            child: Text(especie),
-                          ))
-                      .toList(),
+                  value: especieSeleccionada, // Valor actualmente seleccionado (o null)
+                  items: [
+                    // Opciones de especie
+                    ...["Perros", "Gatos", "Conejos", "Loros"]
+                        .map((especie) => DropdownMenuItem(
+                              value: especie,
+                              child: Text(especie),
+                            ))
+                        .toList(),
+                    // Opción de cancelar selección (aparece al final)
+                    const DropdownMenuItem<String>(
+                      value: 'CANCELAR',
+                      child: Text(
+                        "Cancelar selección",
+                        style: TextStyle(color: Colors.redAccent),
+                      ),
+                    ),
+                  ],
+                  // Cuando cambia la selección:
+                  // - Si elige "Cancelar selección", se limpia la variable (null)
+                  // - Si elige una especie, se guarda el valor
                   onChanged: (value) {
                     setState(() {
-                      especieSeleccionada = value!;
+                      if (value == 'CANCELAR') {
+                        especieSeleccionada = null;
+                      } else {
+                        especieSeleccionada = value;
+                      }
                     });
                   },
+                  hint: const Text("Seleccionar especie"), // Hint cuando no hay selección
                 ),
+
                 const SizedBox(height: 8),
-                // Dropdown de categoría
+
+                // Dropdown para seleccionar categoría
                 DropdownButtonFormField<String>(
                   decoration: InputDecoration(
                     labelText: "Seleccionar categoría",
@@ -331,26 +489,48 @@ final List<Map<String, dynamic>> productosDestacados = [
                     isDense: true,
                   ),
                   style: const TextStyle(fontSize: 14, color: Colors.black),
-                  value: categoriaSeleccionada,
-                  items: categorias
-                      .map((cat) => DropdownMenuItem(
-                            value: cat["titulo"],
-                            child: Text(cat["titulo"]!),
-                          ))
-                      .toList(),
+                  value: categoriaSeleccionada, // Valor actualmente seleccionado (o null)
+                  items: [
+                    // Opciones de categoría (salen del listado 'categorias')
+                    ...categorias
+                        .map((cat) => DropdownMenuItem(
+                              value: cat["titulo"],
+                              child: Text(cat["titulo"]!),
+                            ))
+                        .toList(),
+                    // Opción de cancelar selección (aparece al final)
+                    const DropdownMenuItem<String>(
+                      value: 'CANCELAR',
+                      child: Text(
+                        "Cancelar selección",
+                        style: TextStyle(color: Colors.redAccent),
+                      ),
+                    ),
+                  ],
+                  // Cuando cambia la selección:
+                  // - Si elige "Cancelar selección", se limpia la variable (null)
+                  // - Si elige una categoría, se guarda el valor
                   onChanged: (value) {
                     setState(() {
-                      categoriaSeleccionada = value!;
+                      if (value == 'CANCELAR') {
+                        categoriaSeleccionada = null;
+                      } else {
+                        categoriaSeleccionada = value;
+                      }
                     });
                   },
+                  hint: const Text("Seleccionar categoría"), // Hint cuando no hay selección
                 ),
+
                 const SizedBox(height: 14),
-                // Botón buscar pequeño y minimalista
+
+                // Botón de buscar productos
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Acción de buscar
+                      // Al pulsar, ejecuta la búsqueda avanzada con los criterios seleccionados
+                      buscarProductosAvanzado(context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.lightBlueAccent,
@@ -361,7 +541,7 @@ final List<Map<String, dynamic>> productosDestacados = [
                       textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                       elevation: 0,
                     ),
-                    child: const Text("Buscar", style: TextStyle(color: Colors.white),),
+                    child: const Text("Buscar", style: TextStyle(color: Colors.white)),
                   ),
                 ),
               ],
@@ -369,7 +549,7 @@ final List<Map<String, dynamic>> productosDestacados = [
           ),
 
           // Tarjetas productos
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
@@ -383,35 +563,41 @@ final List<Map<String, dynamic>> productosDestacados = [
             ),
           ),
           const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: productosDestacados.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 18,
-                childAspectRatio: 0.78, // Ajusta este valor según el alto de tus tarjetas
-              ),
-              itemBuilder: (context, index) {
-                final producto = productosDestacados[index];
-                return ProductoDestacadoCard(
-                  nombre: producto["nombre"],
-                  subtitulo: producto["subtitulo"],
-                  precio: producto["precio"],
-                  imagen: producto["imagen"],
-                  descripcion: producto["descripcion"],
-                  especies: producto["especies"],
-                  marca: producto["marca"],
-                );
-              },
-            ),
-          ),
-
-
-          // Puedes seguir con el resto del contenido aquí...
+          loadingProductos
+              ? Center(child: CircularProgressIndicator())
+              : Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2, // Dos columnas
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 0.72,
+                    ),
+                    itemCount: productosApi.length,
+                    itemBuilder: (context, index) {
+                      final producto = productosApi[index];
+                      print("Renderizando producto: $producto");
+                      String imagenUrl = producto['imagen'] ?? '';
+                      if (imagenUrl.isNotEmpty && !imagenUrl.startsWith('http')) {
+                        imagenUrl = 'http://192.168.1.131:8080/$imagenUrl';
+                      }
+                      return ProductoDestacadoCard(
+                        nombre: producto['nombre'] ?? '',
+                        categoria: producto['categoria'] ?? '',
+                        precio: "${producto['precio'] ?? ''} €",
+                        imagen: imagenUrl,
+                        descripcion: producto['descripcion'] ?? '',
+                        especies: (producto['especies'] as List<dynamic>?)
+                            ?.map((e) => e.toString())
+                            .toList() ?? [],
+                        marca: producto['marca'] ?? '',
+                      );
+                    },
+                  ),
+                ),
         ],
       ),
     );
