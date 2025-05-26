@@ -1,25 +1,31 @@
 package com.example.clinica.services;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.UUID;
+import java.nio.file.Paths;
+
 import com.example.clinica.dtos.CreateMascotaDto;
 import com.example.clinica.dtos.GetMascotaDto;
 import com.example.clinica.entities.Mascota;
 import com.example.clinica.entities.Usuario;
 import com.example.clinica.mappers.MascotaMapper;
+import com.example.clinica.repositories.CitaRepository;
 import com.example.clinica.repositories.MascotaRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class MascotaService {
 
+    @Autowired//inicializa el repositorio de manera automatica
+    private CitaRepository citaRepository;
     private final MascotaRepository mascotaRepository;
     private final MascotaMapper mascotaMapper;
 
@@ -82,8 +88,12 @@ public class MascotaService {
     }
 
     // Eliminar una mascota
+    @Transactional
     public boolean deleteMascota(Long id) {
         if (mascotaRepository.existsById(id)) {
+            // Elimina todas las citas de la mascota
+            citaRepository.deleteByMascotaId(id);
+            // Elimina la mascota
             mascotaRepository.deleteById(id);
             return true;
         }

@@ -1,6 +1,9 @@
 package com.example.clinica.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.example.clinica.entities.Cita;
 import com.example.clinica.entities.Servicio;
@@ -19,6 +22,9 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
     List<Cita> findByEspacioAndFechaCitaBetween(Cita.Espacio espacio, LocalDateTime start, LocalDateTime end);
     //Buscar todas las citas de un usuario. Ordenado por fecha, descendiente.
     List<Cita> findByUsuarioDniOrderByFechaCitaAsc(String dni);
-
+    //eliminar citas de una mascota
+    @Modifying
+    @Query("DELETE FROM Cita c WHERE c.mascota.id = :mascotaId")
+    void deleteByMascotaId(@Param("mascotaId") Long mascotaId);
 
 }

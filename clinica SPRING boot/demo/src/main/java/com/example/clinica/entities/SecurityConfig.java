@@ -21,13 +21,13 @@ public class SecurityConfig {
         // Permitir acceso público a los servicios
         .requestMatchers(HttpMethod.GET, "/servicios", "/servicios/**", "/productos").permitAll()
         //Permitir actualizar citas
-        .requestMatchers(HttpMethod.PATCH, "/citas/**").permitAll()
+        .requestMatchers(HttpMethod.PATCH, "/citas/**", "/mascotas/**").permitAll()
 
         // Permitir acceso a todos los endpoints del carrito
         .requestMatchers(HttpMethod.GET, "/carrito/**").permitAll()
         .requestMatchers(HttpMethod.POST, "/carrito/**").permitAll()
         .requestMatchers(HttpMethod.PUT, "/carrito/**").permitAll()
-        .requestMatchers(HttpMethod.DELETE, "/carrito/**").permitAll()
+        .requestMatchers(HttpMethod.DELETE, "/carrito/**", "/mascotas/**").permitAll()
 
         // Permitir que se acceda a las imágenes
         .requestMatchers("/*.jpg", "/*.png", "/*.jpeg").permitAll()

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:clinica_app/pages/CrearMascotas.dart';
+import 'package:clinica_app/pages/EditarMascotas.dart';
 import 'package:clinica_app/pages/data/GetMascotaDto.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -147,15 +148,13 @@ class _MascotasState extends State<Mascotas> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Avatar circular con icono de mascota (por ahora, sin imagen real)
+            // Avatar circular con icono o imagen de mascota
             CircleAvatar(
               radius: 24,
               backgroundColor: Colors.greenAccent.shade100,
-              //Si la mascota tiene imagen (imagenUrl no es null ni vacío), la muestra.
               backgroundImage: (mascota.imagenUrl != null && mascota.imagenUrl!.isNotEmpty)
                   ? NetworkImage('http://192.168.1.131:8080/${mascota.imagenUrl}')
                   : null,
-              //Si no, muestra el icono de mascota
               child: (mascota.imagenUrl == null || mascota.imagenUrl!.isEmpty)
                   ? Icon(Icons.pets, color: Colors.white, size: 28)
                   : null,
@@ -168,7 +167,6 @@ class _MascotasState extends State<Mascotas> {
                 children: [
                   Row(
                     children: [
-                      // Nombre de la mascota
                       Text(
                         mascota.nombre,
                         style: const TextStyle(
@@ -177,7 +175,6 @@ class _MascotasState extends State<Mascotas> {
                         ),
                       ),
                       const Spacer(),
-                      // Icono de sexo: hembra o macho
                       Icon(
                         mascota.sexo.toLowerCase() == "hembra"
                             ? Icons.female
@@ -186,7 +183,6 @@ class _MascotasState extends State<Mascotas> {
                         size: 18,
                       ),
                       const SizedBox(width: 8),
-                      // Etiqueta de especie (Perro, Gato, etc.)
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
@@ -204,35 +200,87 @@ class _MascotasState extends State<Mascotas> {
                       ),
                     ],
                   ),
-                  // Raza de la mascota
                   Text(
                     mascota.raza,
                     style: const TextStyle(fontSize: 14, color: Colors.black54),
                   ),
                   const SizedBox(height: 4),
-                  // Fecha de nacimiento, peso y tamaño
                   Text(
                     "Fecha Nacimiento: ${mascota.fechaNacimiento}\nPeso: ${mascota.peso} Kg\nTamaño: ${mascota.tamano}",
                     style: const TextStyle(fontSize: 13, color: Colors.black87),
                   ),
                   const SizedBox(height: 10),
-                  // Botón para ver vacunas (a implementar)
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      // Acción para ver vacunas de la mascota
-                    },
-                    icon: const Icon(Icons.vaccines, size: 18, color: Colors.blue),
-                    label: const Text(
-                      "Ver Vacunas",
-                      style: TextStyle(color: Colors.blue),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.blue),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                  // Fila de botones: Editar y Eliminar
+                  Row(
+                    children: [
+                      // Botón Editar
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => EditarMascota(mascota: mascota)),
+                            );
+                            if (result == true) {
+                              await cargarMascotasDelUsuario();
+                            }                   
+                          },
+                          icon: const Icon(Icons.edit, size: 18, color: Colors.orangeAccent),
+                          label: const Text(
+                            "Editar Mascota",
+                            style: TextStyle(color: Colors.orangeAccent),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.orangeAccent),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                          ),
+                        ),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 0),
-                    ),
+                      const SizedBox(width: 10),
+                      // Botón Eliminar
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            // Lógica de eliminación (ver siguiente punto)
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Eliminar mascota'),
+                                content: const Text('¿Seguro que quieres eliminar esta mascota? Esta acción no se puede deshacer.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, false),
+                                    child: const Text('Cancelar'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, true),
+                                    child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (confirm == true) {
+                              await eliminarMascota(mascota.id);
+                            }
+                          },
+                          icon: const Icon(Icons.delete_outline, size: 18, color: Colors.redAccent),
+                          label: const Text(
+                            "Eliminar",
+                            style: TextStyle(color: Colors.redAccent),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.redAccent),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -262,6 +310,24 @@ class _MascotasState extends State<Mascotas> {
       throw Exception('Error al cargar mascotas: ${response.statusCode} - ${response.body}');
     }
   }
+
+  Future<void> eliminarMascota(int mascotaId) async {
+    final url = Uri.parse('http://192.168.1.131:8080/mascotas/$mascotaId');
+    final response = await http.delete(url);
+
+    if (response.statusCode == 204) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Mascota eliminada correctamente')),
+      );
+      // Recarga la lista de mascotas
+      await cargarMascotasDelUsuario();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al eliminar mascota: ${response.body}')),
+      );
+    }
+  }
+
 
   // Función que obtiene el dni o email del usuario logueado desde SharedPreferences
   Future<String?> obtenerDniOEmailUsuario() async {
