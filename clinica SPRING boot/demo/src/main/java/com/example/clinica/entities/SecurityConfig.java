@@ -23,6 +23,12 @@ public class SecurityConfig {
         //Permitir actualizar citas
         .requestMatchers(HttpMethod.PATCH, "/citas/**").permitAll()
 
+        // Permitir acceso a todos los endpoints del carrito
+        .requestMatchers(HttpMethod.GET, "/carrito/**").permitAll()
+        .requestMatchers(HttpMethod.POST, "/carrito/**").permitAll()
+        .requestMatchers(HttpMethod.PUT, "/carrito/**").permitAll()
+        .requestMatchers(HttpMethod.DELETE, "/carrito/**").permitAll()
+
         // Permitir que se acceda a las imágenes
         .requestMatchers("/*.jpg", "/*.png", "/*.jpeg").permitAll()
         // Todas las demás rutas requieren autenticación

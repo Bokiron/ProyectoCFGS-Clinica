@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Muestra la información completa del producto, incluyendo imagen, nombre, marca, categoría,
 // especies a las que va dirigido, descripción y un selector de unidades para añadir a la cesta.
@@ -10,9 +14,11 @@ class DetalleProductoScreen extends StatefulWidget {
   final String marca;      
   final String categoria;
   final List<String> especies;
+  final int productoId;
 
   const DetalleProductoScreen({
     super.key,
+    required this.productoId,
     required this.nombre,
     required this.categoria,
     required this.precio,
@@ -28,6 +34,46 @@ class DetalleProductoScreen extends StatefulWidget {
 
 class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
   int unidades = 1; // Contador de unidades para añadir a la cesta
+
+  // Función que obtiene el dni o email del usuario logueado desde SharedPreferences
+  Future<String?> obtenerDniUsuario() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('dni_usuario'); // Cambia la clave si usas otro nombre
+  }
+
+    Future<void> addToCart() async {
+    final String? dniUsuario = await obtenerDniUsuario();
+    if (dniUsuario == null) {
+      // Muestra un mensaje de error si no hay usuario logueado
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor, inicia sesión para añadir productos a la cesta')),
+      );
+      return;
+    }
+
+    // TODO: Cambia la URL por la de tu backend
+    final url = Uri.parse('http://192.168.1.131:8080/carrito/$dniUsuario/linea');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'productoId': widget.productoId,
+        'cantidad': unidades,
+        'seleccionado': true,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Producto añadido a la cesta')),
+      );
+      Navigator.pop(context); // Opcional: volver atrás tras añadir
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al añadir el producto a la cesta')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +187,8 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
                     ),
                   ),
                   onPressed: () {
-                    // TODO: Implementar lógica para añadir a la cesta
+                    //lógica para añadir a la cesta
+                    addToCart();
                   },
                 ),
               ),

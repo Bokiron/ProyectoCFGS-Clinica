@@ -9,9 +9,11 @@ class ProductoDestacadoCard extends StatelessWidget {
   final String descripcion;
   final List<String> especies;
   final String marca;
+  final int productoId;
 
   const ProductoDestacadoCard({
     super.key,
+    required this.productoId,
     required this.nombre,
     required this.categoria,
     required this.precio,
@@ -29,6 +31,7 @@ class ProductoDestacadoCard extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (_) => DetalleProductoScreen(
+              productoId: productoId,
               nombre: nombre,
               categoria: categoria,
               precio: precio,

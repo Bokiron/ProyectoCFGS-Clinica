@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:clinica_app/pages/CarritoScreen.dart';
 import 'package:clinica_app/pages/CitasScreen.dart';
 import 'package:clinica_app/pages/MascotasScreen.dart';
 import 'package:clinica_app/pages/PedirCita.dart';
@@ -166,7 +167,12 @@ class _InicioState extends State<Inicio> {
                         child: _circleMenuButton(
                           imagePath: "lib/assets/icon_cesta.png", // Ruta a tu imagen
                           label: "Cesta",
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => CarritoScreen()),
+                            );
+                          },
                         ),
                       ),
                       // Pets con imagen

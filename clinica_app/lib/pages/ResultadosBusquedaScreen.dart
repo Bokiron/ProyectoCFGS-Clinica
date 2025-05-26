@@ -61,6 +61,7 @@ class ResultadosBusquedaScreen extends StatelessWidget {
                           imagenUrl = 'http://192.168.1.131:8080/$imagenUrl';
                         }
                         return ProductoDestacadoCard(
+                          productoId: producto['id'] ?? '',
                           nombre: producto['nombre'] ?? '',
                           categoria: producto['categoria'] ?? '',
                           precio: "${producto['precio'] ?? ''} €",
