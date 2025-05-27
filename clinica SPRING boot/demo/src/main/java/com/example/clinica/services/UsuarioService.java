@@ -40,7 +40,12 @@ public class UsuarioService {
         return usuarioRepository.findByEmail(email).map(usuarioMapper::toGetUsuarioDto);
     }
 
-    //OBtener usuario por email o DNI
+    // Obtener un usuario por DNI para login
+    public Optional<Usuario> getUsuarioByDniLogin(String dni) {
+        return usuarioRepository.findByDni(dni);
+    }
+
+    /*//OBtener usuario por email o DNI
     public Optional<Usuario> findByDniOrEmail(String dniOrEmail) {
         // Busca primero por DNI, si no encuentra, busca por email
         Optional<Usuario> usuario = usuarioRepository.findByDni(dniOrEmail);
@@ -49,7 +54,7 @@ public class UsuarioService {
         } else {
             return usuarioRepository.findByEmail(dniOrEmail);
         }
-    }
+    }*/
 
     // Crear un nuevo usuario
     public Usuario createUsuario(CreateUsuarioDto dto) {

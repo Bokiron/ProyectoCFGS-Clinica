@@ -49,9 +49,8 @@ public class UsuarioController {
     }
     // Obtener usuario por DNI o email usando un parámetro de consulta. Ruta localhost:8080/usuarios/buscar?dniOrEmail=1@1.com
     @GetMapping("/buscar")
-    public ResponseEntity<GetUsuarioDto> getUsuarioByDniOrEmail(@RequestParam String dniOrEmail) {
-        return usuarioService.findByDniOrEmail(dniOrEmail)
-                .map(usuarioMapper::toGetUsuarioDto)
+    public ResponseEntity<GetUsuarioDto> getUsuarioByDniOrEmail(@RequestParam String dni) {
+        return usuarioService.getUsuarioByDni(dni)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -93,13 +92,13 @@ public class UsuarioController {
     //Ruta para comprobar el logueo de un usuario
     @PostMapping("/{login}")
     public ResponseEntity<?> login(@RequestBody LoginRequestDto loginDto) {
-    Optional<Usuario> usuarioOpt = usuarioService.findByDniOrEmail(loginDto.getDniOrEmail());
-    if (usuarioOpt.isPresent() && usuarioOpt.get().getContrasena().equals(loginDto.getContrasena())) {
-        // Opcional: devolver info del usuario o token
-        return ResponseEntity.ok().body("Login correcto");
-    } else {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
+        Optional<Usuario> usuarioOpt = usuarioService.getUsuarioByDniLogin(loginDto.getDni());
+        if (usuarioOpt.isPresent() && usuarioOpt.get().getContrasena().equals(loginDto.getContrasena())) {
+            // Opcional: devolver info del usuario o token
+            return ResponseEntity.ok().body("Login correcto");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
+        }
     }
-}
 }
 

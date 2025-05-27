@@ -65,28 +65,35 @@ public class CitaController {
         return citaService.getCitasByUsuario(dni);
     }
 
-
+    //obtiene las horas ocupadas por citas confirmadas
     @GetMapping("/ocupadas")
     public List<String> getHorasOcupadas(
         @RequestParam String fecha,
         @RequestParam String espacio
     ) {
-        // Parsear la fecha
         LocalDate dia = LocalDate.parse(fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        //start y end para buscar desde el inicio hasta el fin del dia
         LocalDateTime start = dia.atStartOfDay();
         LocalDateTime end = dia.atTime(LocalTime.MAX);
-        //Importante .trim para eliminar cualquier espacio en blanco y upperCase para asegurar que se pasa en mayusculas
         Cita.Espacio espacioEnum = Cita.Espacio.valueOf(espacio.trim().toUpperCase());
-
-        // Buscar citas en ese día y espacio
-        List<Cita> citas = citaRepository.findByEspacioAndFechaCitaBetween(espacioEnum, start, end);
-
-        // Devolver solo las horas ocupadas como strings "HH:mm"
+        List<Cita> citas = citaRepository.findByEspacioAndEstadoAndFechaCitaBetween(
+            espacioEnum, Cita.EstadoCita.CONFIRMADA, start, end
+        );
         return citas.stream()
-            .map(c -> c.getFechaCita().toLocalTime().toString().substring(0,5)) // "HH:mm"
+            .map(c -> c.getFechaCita().toLocalTime().toString().substring(0,5))
             .toList();
     }
+
+    //endpoint para obtener las proximas citas del usuario
+    @GetMapping("/usuario/{dni}/proximas")
+    public List<GetCitaDto> getCitasProximasConfirmadasByUsuario(@PathVariable String dni) {
+        return citaService.getCitasProximasConfirmadasByUsuario(dni);
+    }
+    //endpoint para obtener el historial de citas de un usuario
+    @GetMapping("/usuario/{dni}/historial")
+    public List<GetCitaDto> getHistorialCitasByUsuario(@PathVariable String dni) {
+        return citaService.getHistorialCitasByUsuario(dni);
+    }
+
 
     @PostMapping // Maneja solicitudes POST para crear una nueva cita
     public ResponseEntity<GetCitaDto> createCita(@RequestBody CreateCitaDto dto) {

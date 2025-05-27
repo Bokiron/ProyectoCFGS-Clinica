@@ -5,9 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
-
 import com.example.clinica.dtos.CreateCitaDto;
 import com.example.clinica.dtos.GetCitaDto;
 import com.example.clinica.dtos.UpdateCitaDto;
@@ -59,21 +57,35 @@ public class CitaService {
             .map(citaMapper::toGetCitaDto)
             .collect(Collectors.toList());
     }
+    //obtener citas proximas confirmadas de un usuario
+    public List<GetCitaDto> getCitasProximasConfirmadasByUsuario(String dni) {
+        List<Cita> citas = citaRepository.findByUsuarioDniAndEstadoAndFechaCitaAfterOrderByFechaCitaAsc(
+            dni, Cita.EstadoCita.CONFIRMADA, LocalDateTime.now()
+        );
+        return citas.stream().map(citaMapper::toGetCitaDto).collect(Collectors.toList());
+    }
+
+    public List<GetCitaDto> getHistorialCitasByUsuario(String dni) {
+        List<Cita> citas = citaRepository.findHistorialByUsuario(dni, LocalDateTime.now());
+        return citas.stream().map(citaMapper::toGetCitaDto).collect(Collectors.toList());
+    }
 
 
     // Crea una nueva cita con los datos proporcionados
     public Cita createCita(CreateCitaDto dto, Mascota mascota, Servicio servicio, Usuario usuario) {
-    LocalDateTime fechaCita = LocalDateTime.of(dto.getFecha(), dto.getHora());
-    Cita.Espacio espacio = Cita.Espacio.valueOf(dto.getEspacio().toUpperCase());
+        LocalDateTime fechaCita = LocalDateTime.of(dto.getFecha(), dto.getHora());
+        Cita.Espacio espacio = Cita.Espacio.valueOf(dto.getEspacio().toUpperCase());
+        
+        // Valida que no haya una cita CONFIRMADA en el mismo espacio y en la misma fecha
+        if (citaRepository.existsByEspacioAndEstadoAndFechaCita(
+            espacio, Cita.EstadoCita.CONFIRMADA, fechaCita
+        )) {
+            throw new CitaSolapadaException("Ya existe una cita confirmada en ese espacio, fecha y hora.");
+        }
 
-    // Valida que no haya una cita en el mismo espacio y en la misma fecha
-    if (citaRepository.existsByEspacioAndFechaCita(espacio, fechaCita)) {
-        throw new CitaSolapadaException("Ya existe una cita en ese espacio, fecha y hora.");
+        Cita nuevaCita = citaMapper.toCita(dto, mascota, servicio, usuario);
+        return citaRepository.save(nuevaCita);
     }
-
-    Cita nuevaCita = citaMapper.toCita(dto, mascota, servicio, usuario);
-    return citaRepository.save(nuevaCita);
-}
 
     // Actualiza completamente una cita existente
     public Optional<Cita> updateCita(Long id, CreateCitaDto dto, Mascota mascota, Servicio servicio) {
@@ -86,7 +98,7 @@ public class CitaService {
             return citaRepository.save(cita); // Guarda los cambios en la base de datos
         });
     }
-
+    //actualizar cita
     public Optional<Cita> updateCitaParcial(Long id, UpdateCitaDto dto) {
         return citaRepository.findById(id).map(cita -> {
             if (dto.getFecha() != null) cita.setFechaCita(LocalDateTime.of(dto.getFecha(), LocalTime.parse(dto.getHora())));

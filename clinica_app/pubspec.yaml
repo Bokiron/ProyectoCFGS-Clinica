@@ -35,3 +35,13 @@ flutter:
     - lib/assets/icon_mascotas.png
     - lib/assets/icon_pedirCita.png
     - lib/assets/icon_tienda.png
+    - lib/assets/icon_editarUsuario.png
+    - lib/assets/icon_ajustesUsuario.png
+    - lib/assets/icon_ayudaUsuario.png
+    - lib/assets/icon_cerrarSesion.png
+    - lib/assets/icon_citasUsuario.png
+    - lib/assets/icon_favoritosUsuario.png
+    - lib/assets/icon_historialCitasUsuario.png
+    - lib/assets/icon_mascotasUsuario.png
+    - lib/assets/icon_notificacionUsuario.png
+    - lib/assets/icon_pagosUsuario.png

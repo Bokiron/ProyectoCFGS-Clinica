@@ -18,7 +18,7 @@ class CitasScreenState extends State<CitasScreen> {
   }
   //Peticion get para obtener las citas del usuario
   Future<List<Map<String, dynamic>>> obtenerCitasUsuario(String dni) async {
-    final url = 'http://192.168.1.131:8080/citas/usuario/$dni';
+    final url = 'http://192.168.1.131:8080/citas/usuario/$dni/proximas';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);

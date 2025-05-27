@@ -1,10 +1,10 @@
 import 'dart:math';
-import 'package:clinica_app/pages/CarritoScreen.dart';
-import 'package:clinica_app/pages/CitasScreen.dart';
-import 'package:clinica_app/pages/MascotasScreen.dart';
-import 'package:clinica_app/pages/PedirCita.dart';
-import 'package:clinica_app/pages/TiendaScreen.dart';
-import 'package:clinica_app/pages/UsuarioInfoScreen.dart';
+import 'package:clinica_app/pages/Tienda/CarritoScreen.dart';
+import 'package:clinica_app/pages/citas/CitasScreen.dart';
+import 'package:clinica_app/pages/mascotas/MascotasScreen.dart';
+import 'package:clinica_app/pages/citas/PedirCita.dart';
+import 'package:clinica_app/pages/Tienda/TiendaScreen.dart';
+import 'package:clinica_app/pages/usuario/UsuarioScreen.dart';
 import 'package:flutter/material.dart';
 
 class Inicio extends StatefulWidget {
@@ -24,7 +24,7 @@ class _InicioState extends State<Inicio> {
       // Añadimos la imagen de fondo desde la red
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: NetworkImage("https://i.pinimg.com/originals/7c/7b/74/7c7b748eaba6be9895724fd87eb6c414.jpg"), // Cambia esta URL por la que quieras usar
+          image: NetworkImage("https://i.pinimg.com/originals/7c/7b/74/7c7b748eaba6be9895724fd87eb6c414.jpg"), // URL FONDo
           fit: BoxFit.cover, // Para que cubra toda la pantalla
         ),
       ),
@@ -42,7 +42,7 @@ class _InicioState extends State<Inicio> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const UsuarioInfoPage()),
+                        MaterialPageRoute(builder: (context) => const UsuarioScreen()),
                       );
                     },
                   ),

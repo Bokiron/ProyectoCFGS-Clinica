@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:clinica_app/pages/ChangePassword.dart';
+import 'package:clinica_app/pages/Login/ChangePassword.dart';
 import 'package:clinica_app/pages/Inicio.dart';
-import 'package:clinica_app/pages/SignUp.dart';
+import 'package:clinica_app/pages/Login/SignUp.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,7 +20,9 @@ class _LoginState extends State<Login> {
   final contrasenaController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return Stack(
+  return Scaffold(
+    backgroundColor: Colors.transparent, // Para que el fondo siga siendo la imagen
+    body: Stack(
       children: [
         // Imagen de fondo
         Positioned.fill(
@@ -54,7 +56,7 @@ class _LoginState extends State<Login> {
                     TextFormField(
                       controller: usuarioController,
                       decoration: const InputDecoration(
-                        labelText: "DNI/N.I.F o E-Mail",
+                        labelText: "DNI",
                         labelStyle: TextStyle(color: Colors.white),
                         floatingLabelStyle: TextStyle(color: Colors.lightBlueAccent),//cambiar el color del labeltext, cuando esta flotando
                         enabledBorder: UnderlineInputBorder(
@@ -196,7 +198,8 @@ class _LoginState extends State<Login> {
           ),
         ),
       ],
-    );
+    ),
+  );
   }
 
   Future<void> guardarDnioEmailUsuario(String dni) async {
@@ -210,7 +213,7 @@ class _LoginState extends State<Login> {
     url,
     headers: {'Content-Type': 'application/json'},
     body: jsonEncode({
-      "dniOrEmail": usuarioController.text,
+      "dni": usuarioController.text,
       "contrasena": contrasenaController.text,
     }),
   );

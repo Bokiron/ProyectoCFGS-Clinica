@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:clinica_app/pages/CrearMascotas.dart';
-import 'package:clinica_app/pages/EditarMascotas.dart';
+import 'package:clinica_app/pages/mascotas/CrearMascotas.dart';
+import 'package:clinica_app/pages/mascotas/EditarMascotas.dart';
 import 'package:clinica_app/pages/data/GetMascotaDto.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

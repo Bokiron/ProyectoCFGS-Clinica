@@ -16,10 +16,27 @@ class PedircitaState extends State<Pedircita> {
   DateTime _fechaSeleccionada = DateTime.now();
 
   List<String> get horasDisponibles {
-  return _selectedEspacio == 0 
-      ? ["09:30", "10:30", "11:30", "12:30", "16:30", "17:30", "18:30"]//horas consulta
-      : ["10:00", "11:00", "12:00", "13:00", "17:00", "18:00"];//horas peluqueria
-}
+    //hora actual
+    final now = DateTime.now();
+    //dia de hoy
+    final isToday = isSameDay(_fechaSeleccionada, now);
+    //carga las horas de cada espacio
+    final horas = _selectedEspacio == 0
+        ? ["09:30", "10:30", "11:30", "12:30", "16:30", "17:30", "18:30"]//horas consulta
+        : ["10:00", "11:00", "12:00", "13:00", "17:00", "18:00"];//horas peluqueria
+
+    if (!isToday) return horas;//devuelve todas las horas
+
+    // Si es hoy, filtrar las horas que aún no han pasado
+    final horaActual = now.hour * 60 + now.minute;
+    return horas.where((hora) {
+      final parts = hora.split(':');
+      final h = int.parse(parts[0]);
+      final m = int.parse(parts[1]);
+      final minutos = h * 60 + m;
+      return minutos > horaActual;
+    }).toList();
+  }
 
   List<String> horasOcupadas = [];
   List<String> horasLibres = [];
@@ -528,5 +545,4 @@ class PedircitaState extends State<Pedircita> {
       print('[DEBUG] Excepción al consultar horas ocupadas: $e');
     }
   }
-
 }

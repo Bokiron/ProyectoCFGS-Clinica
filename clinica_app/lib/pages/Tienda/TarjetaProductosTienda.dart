@@ -1,4 +1,4 @@
-import 'package:clinica_app/pages/DetalleProductoScreen.dart';
+import 'package:clinica_app/pages/Tienda/DetalleProductoScreen.dart';
 import 'package:flutter/material.dart';
 
 class ProductoDestacadoCard extends StatelessWidget {

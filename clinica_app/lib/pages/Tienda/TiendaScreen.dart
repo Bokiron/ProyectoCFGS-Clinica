@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'package:clinica_app/pages/ResultadosBusquedaScreen.dart';
-import 'package:clinica_app/pages/TarjetaProductosTienda.dart';
+import 'package:clinica_app/pages/Tienda/CarritoScreen.dart';
+import 'package:clinica_app/pages/Tienda/ResultadosBusquedaScreen.dart';
+import 'package:clinica_app/pages/Tienda/TarjetaProductosTienda.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -601,6 +602,22 @@ Future<void> buscarProductosAvanzado(BuildContext context) async {
                 ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color.fromARGB(255, 152, 239, 153),
+        elevation: 6,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CarritoScreen()),
+          ); // O usa MaterialPageRoute si no usas rutas nombradas
+        },
+        child: Image.asset(
+          "lib/assets/icon_cesta.png", // Pon aquí la ruta a tu icono de la cesta
+          width: 32,
+          height: 32,
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
