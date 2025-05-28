@@ -2,9 +2,9 @@ package com.example.clinica.dtos;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,10 +28,19 @@ public class CreateCitaDto {
     @JsonFormat(pattern = "HH:mm")
     private LocalTime hora;   // Solo la hora
 
+    @NotBlank(message = "El espacio es obligatorio")
+    private String espacio;
+
     private String motivo;
+
+    @NotBlank(message = "El estado es obligatorio")
+    private String estado;
 
     @NotNull(message = "id de la mascota es obligatorio")
     private Long mascotaId;
+
+    @NotBlank(message = "El dni del usuario es obligatorio")
+    private String usuarioDni;
 
     @NotNull(message = "id del servicio es obligatorio")
     private Long servicioId;

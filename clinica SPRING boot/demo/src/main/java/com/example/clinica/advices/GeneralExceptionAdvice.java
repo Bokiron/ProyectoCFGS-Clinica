@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.example.clinica.exceptions.CitaSolapadaException;
+
     @RestControllerAdvice
     public class GeneralExceptionAdvice {
     
@@ -18,6 +20,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public String handleExceptions(Exception ex) {
+        return ex.getMessage();
+    }
+
+    @ResponseStatus(code = HttpStatus.CONFLICT)
+    @ExceptionHandler(CitaSolapadaException.class)
+    public String handleCitaSolapada(CitaSolapadaException ex) {
         return ex.getMessage();
     }
 }

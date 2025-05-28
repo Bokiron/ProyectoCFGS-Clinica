@@ -1,7 +1,6 @@
 package com.example.clinica.mappers;
 
 import org.springframework.stereotype.Component;
-
 import com.example.clinica.dtos.CreateServicioDto;
 import com.example.clinica.dtos.GetServicioDto;
 import com.example.clinica.entities.Servicio;
@@ -11,9 +10,10 @@ public class ServicioMapper {
 
     public Servicio toServicio(CreateServicioDto dto) {
         return new Servicio(
-            dto.getId(),
+            null,
             dto.getNombre(),
-            dto.getPrecio()
+            dto.getPrecio(),
+            dto.getEspacioServicio()
         );
     }
 
@@ -21,7 +21,8 @@ public class ServicioMapper {
         return new GetServicioDto(
             servicio.getId(),
             servicio.getNombre(),
-            servicio.getPrecio()
+            servicio.getPrecio(),
+            servicio.getEspacioServicio()
         );
     }
 }

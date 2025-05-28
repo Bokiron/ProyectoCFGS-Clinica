@@ -1,4 +1,4 @@
-import 'package:clinica_app/pages/Login.dart';
+import 'package:clinica_app/pages/Login/Login.dart';
 import 'package:flutter/material.dart';
 
 // Punto de entrada de la aplicación
@@ -50,9 +50,6 @@ _HomeState createState() => _HomeState();
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-    resizeToAvoidBottomInset: true, // Ajusta el diseño cuando aparece el teclado
-    body: Login(), // Carga la pantalla de login
-    );
+    return Login();
   }
 }

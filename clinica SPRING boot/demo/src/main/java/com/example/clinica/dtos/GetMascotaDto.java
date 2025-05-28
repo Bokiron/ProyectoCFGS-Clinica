@@ -1,9 +1,8 @@
 package com.example.clinica.dtos;
 
 import java.util.Date;
-
-import com.example.clinica.entities.Usuario;
-
+import com.example.clinica.entities.Mascota.Sexo;
+import com.example.clinica.entities.Mascota.Tamano;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,5 +18,9 @@ public class GetMascotaDto {
     private String especie;
     private String raza;
     private Date fechaNacimiento;
-    private Usuario usuario;
+    private Tamano tamano;
+    private Double peso;
+    private Sexo sexo;
+    private String usuarioDni;
+    private String imagenUrl;
 }

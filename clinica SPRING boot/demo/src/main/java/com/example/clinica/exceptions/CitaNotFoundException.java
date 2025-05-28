@@ -5,3 +5,4 @@ public class CitaNotFoundException extends RuntimeException {
         super("No se encontró la cita " + id);
     }
 }
+

@@ -1,8 +1,13 @@
 import 'dart:math';
-import 'package:clinica_app/pages/MascotasScreen.dart';
-import 'package:clinica_app/pages/PedirCita.dart';
-import 'package:clinica_app/pages/TiendaScreen.dart';
+import 'package:clinica_app/pages/Tienda/CarritoScreen.dart';
+import 'package:clinica_app/pages/citas/AdminCitas.dart';
+import 'package:clinica_app/pages/citas/CitasScreen.dart';
+import 'package:clinica_app/pages/mascotas/MascotasScreen.dart';
+import 'package:clinica_app/pages/citas/PedirCita.dart';
+import 'package:clinica_app/pages/Tienda/TiendaScreen.dart';
+import 'package:clinica_app/pages/usuario/UsuarioScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Inicio extends StatefulWidget {
   const Inicio({Key? key}) : super(key: key);
@@ -21,7 +26,7 @@ class _InicioState extends State<Inicio> {
       // Añadimos la imagen de fondo desde la red
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: NetworkImage("https://i.pinimg.com/originals/7c/7b/74/7c7b748eaba6be9895724fd87eb6c414.jpg"), // Cambia esta URL por la que quieras usar
+          image: NetworkImage("https://i.pinimg.com/originals/7c/7b/74/7c7b748eaba6be9895724fd87eb6c414.jpg"), // URL FONDo
           fit: BoxFit.cover, // Para que cubra toda la pantalla
         ),
       ),
@@ -36,7 +41,12 @@ class _InicioState extends State<Inicio> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.person, color: Colors.white, size: 32),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const UsuarioScreen()),
+                      );
+                    },
                   ),
                   Image.asset(
                     "lib/assets/letrasClinica.png",
@@ -159,7 +169,12 @@ class _InicioState extends State<Inicio> {
                         child: _circleMenuButton(
                           imagePath: "lib/assets/icon_cesta.png", // Ruta a tu imagen
                           label: "Cesta",
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => CarritoScreen()),
+                            );
+                          },
                         ),
                       ),
                       // Pets con imagen
@@ -187,7 +202,23 @@ class _InicioState extends State<Inicio> {
                         child: _circleMenuButton(
                           imagePath: "lib/assets/icon_citas.png", // Ruta a tu imagen
                           label: "Citas",
-                          onTap: () {},
+                          onTap: () async {
+                            //obtencion del rol desde sharedPreferences
+                            final prefs = await SharedPreferences.getInstance();
+                            final rol = prefs.getString('rol_usuario');
+                            //si rol es admin navegamos a la pantalla de admin, que muestra las citas que hay para cada dia
+                            if (rol == 'ADMIN') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => AdminCitas()),
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => CitasScreen()),
+                              );
+                            }
+                          },
                         ),
                       ),
                       // Tienda con imagen

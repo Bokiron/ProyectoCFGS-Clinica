@@ -1,5 +1,7 @@
 package com.example.clinica.dtos;
 
+import com.example.clinica.entities.Cita.Espacio;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,4 +25,7 @@ public class CreateServicioDto {
     @NotNull(message = "precio es obligatorio")
     @Min(value = 0, message = "El precio debe ser mayor o igual a 0")
     private Double precio;
+
+    @NotBlank(message = "espacio es obligatorio")
+    private Espacio espacioServicio;
 }
