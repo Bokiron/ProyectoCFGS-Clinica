@@ -134,19 +134,17 @@ class _CarritoScreenState extends State<CarritoScreen> {
     final haySeleccionados = lineas.any((l) => l['seleccionado'] == true);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: Colors.white,
         elevation: 0,
-        // Botón de retroceso
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
-        // Título de la AppBar
         title: const Text(
           "Cesta",
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -154,7 +152,7 @@ class _CarritoScreenState extends State<CarritoScreen> {
         actions: [
           if (haySeleccionados)
             IconButton(
-              icon: const Icon(Icons.delete, color: Colors.white),
+              icon: const Icon(Icons.delete, color: Colors.blueAccent),
               tooltip: 'Eliminar seleccionados',
               onPressed: () async {
                 // Confirmación antes de eliminar

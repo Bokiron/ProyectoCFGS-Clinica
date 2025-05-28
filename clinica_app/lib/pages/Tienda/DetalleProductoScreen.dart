@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:clinica_app/pages/usuario/UsuarioScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -78,23 +79,33 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+            // AppBar personalizado con botón de retroceso y título
       appBar: AppBar(
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: Colors.white,
         elevation: 0,
-        // Botón de retroceso
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
-        // Título de la AppBar con el nombre del producto
         title: Text(
           widget.nombre,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: Colors.black,
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person, color: Colors.blueAccent),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UsuarioScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),

@@ -100,9 +100,20 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Editar perfil"),
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
         centerTitle: true,
+        title: Text(
+          "Editar Perfil",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       backgroundColor: Colors.white,
       body: isLoading

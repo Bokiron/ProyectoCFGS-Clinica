@@ -3,6 +3,7 @@ import 'package:clinica_app/pages/Tienda/AdminCrearProducto.dart';
 import 'package:clinica_app/pages/Tienda/CarritoScreen.dart';
 import 'package:clinica_app/pages/Tienda/ResultadosBusquedaScreen.dart';
 import 'package:clinica_app/pages/Tienda/TarjetaProductosTienda.dart';
+import 'package:clinica_app/pages/usuario/UsuarioScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -209,25 +210,31 @@ Future<void> buscarProductosAvanzado(BuildContext context) async {
   Widget build(BuildContext context) {
 
     return Scaffold(
+            // AppBar personalizado con botón de retroceso y título
       appBar: AppBar(
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
         title: const Text(
           "Tienda",
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontWeight: FontWeight.bold,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.person, color: Colors.white),
-            onPressed: () {},
+            icon: const Icon(Icons.person, color: Colors.blueAccent),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UsuarioScreen()),
+              );
+            },
           ),
         ],
       ),

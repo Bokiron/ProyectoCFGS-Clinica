@@ -1,11 +1,13 @@
 import 'dart:math';
 import 'package:clinica_app/pages/Tienda/CarritoScreen.dart';
+import 'package:clinica_app/pages/citas/AdminCitas.dart';
 import 'package:clinica_app/pages/citas/CitasScreen.dart';
 import 'package:clinica_app/pages/mascotas/MascotasScreen.dart';
 import 'package:clinica_app/pages/citas/PedirCita.dart';
 import 'package:clinica_app/pages/Tienda/TiendaScreen.dart';
 import 'package:clinica_app/pages/usuario/UsuarioScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Inicio extends StatefulWidget {
   const Inicio({Key? key}) : super(key: key);
@@ -200,12 +202,22 @@ class _InicioState extends State<Inicio> {
                         child: _circleMenuButton(
                           imagePath: "lib/assets/icon_citas.png", // Ruta a tu imagen
                           label: "Citas",
-                          onTap: () {
-                            // Acción de navegación
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => CitasScreen()),
-                            );
+                          onTap: () async {
+                            //obtencion del rol desde sharedPreferences
+                            final prefs = await SharedPreferences.getInstance();
+                            final rol = prefs.getString('rol_usuario');
+                            //si rol es admin navegamos a la pantalla de admin, que muestra las citas que hay para cada dia
+                            if (rol == 'ADMIN') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => AdminCitas()),
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => CitasScreen()),
+                              );
+                            }
                           },
                         ),
                       ),

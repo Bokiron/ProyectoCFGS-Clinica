@@ -1,3 +1,4 @@
+import 'package:clinica_app/pages/usuario/UsuarioScreen.dart';
 import 'package:flutter/material.dart';
 import 'TarjetaProductosTienda.dart';
 
@@ -14,9 +15,33 @@ class ResultadosBusquedaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+            // AppBar personalizado con botón de retroceso y título
       appBar: AppBar(
-        title: const Text("Resultados de búsqueda"),
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        centerTitle: true,
+        title: const Text(
+          "Resultados de búsqueda",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person, color: Colors.blueAccent),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UsuarioScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(14.0),
@@ -64,7 +89,7 @@ class ResultadosBusquedaScreen extends StatelessWidget {
                           productoId: producto['id'] ?? '',
                           nombre: producto['nombre'] ?? '',
                           categoria: producto['categoria'] ?? '',
-                          precio: "${producto['precio'] ?? ''} €",
+                          precio: "${producto['precio'] ?? ''}",
                           imagen: imagenUrl,
                           descripcion: producto['descripcion'] ?? '',
                           especies: (producto['especies'] as List<dynamic>?)

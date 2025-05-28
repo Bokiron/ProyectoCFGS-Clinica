@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:clinica_app/pages/mascotas/CrearMascotas.dart';
 import 'package:clinica_app/pages/mascotas/EditarMascotas.dart';
 import 'package:clinica_app/pages/data/GetMascotaDto.dart';
+import 'package:clinica_app/pages/usuario/UsuarioScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -90,8 +91,10 @@ class _MascotasState extends State<Mascotas> {
           IconButton(
             icon: const Icon(Icons.person, color: Colors.blueAccent),
             onPressed: () {
-              // Aquí puedes añadir acciones para el usuario (perfil, ajustes, etc.)
-              
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UsuarioScreen()),
+              );
             },
           ),
         ],

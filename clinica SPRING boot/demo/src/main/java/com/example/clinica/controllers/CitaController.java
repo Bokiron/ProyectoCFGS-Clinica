@@ -24,6 +24,7 @@ import com.example.clinica.entities.Cita;
 import com.example.clinica.entities.Mascota;
 import com.example.clinica.entities.Servicio;
 import com.example.clinica.entities.Usuario;
+import com.example.clinica.mappers.CitaMapper;
 import com.example.clinica.repositories.CitaRepository;
 import com.example.clinica.repositories.MascotaRepository;
 import com.example.clinica.repositories.ServicioRepository;
@@ -39,13 +40,16 @@ public class CitaController {
     private final ServicioRepository servicioRepository;
     private final UsuarioRepository usuarioRepository;
     private final CitaRepository citaRepository;
+    private final CitaMapper citaMapper;
     // Constructor que inyecta los servicios y repositorios necesarios
-    public CitaController(CitaService citaService, MascotaRepository mascotaRepository, ServicioRepository servicioRepository, UsuarioRepository usuarioRepository, CitaRepository citaRepository) {
+    public CitaController(CitaService citaService, MascotaRepository mascotaRepository, ServicioRepository servicioRepository, 
+    UsuarioRepository usuarioRepository, CitaRepository citaRepository, CitaMapper citaMapper) {
         this.citaService = citaService;
         this.mascotaRepository = mascotaRepository;
         this.servicioRepository = servicioRepository;
         this.usuarioRepository = usuarioRepository;
         this.citaRepository = citaRepository;
+        this.citaMapper = citaMapper;
     }
 
     @GetMapping // Maneja solicitudes GET para obtener todas las citas
@@ -63,6 +67,22 @@ public class CitaController {
     @GetMapping("/usuario/{dni}")
     public List<GetCitaDto> getCitasByUsuario(@PathVariable String dni) {
         return citaService.getCitasByUsuario(dni);
+    }
+    //obtiene las citas confirmadas, usado para mostrarselas al admin
+    @GetMapping("/confirmadas")
+    public List<GetCitaDto> getCitasConfirmadasPorFechaYEspacio(
+        @RequestParam String fecha,
+        @RequestParam String espacio
+    ) {
+        LocalDate dia = LocalDate.parse(fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        LocalDateTime start = dia.atStartOfDay();
+        LocalDateTime end = dia.atTime(LocalTime.MAX);
+        Cita.Espacio espacioEnum = Cita.Espacio.valueOf(espacio.trim().toUpperCase());
+        List<Cita> citas = citaRepository.findByEspacioAndEstadoAndFechaCitaBetween(
+            espacioEnum, Cita.EstadoCita.CONFIRMADA, start, end
+        );
+        // Usa tu mapper para convertir a DTO
+        return citas.stream().map(citaMapper::toGetCitaDto).toList();
     }
 
     //obtiene las horas ocupadas por citas confirmadas
