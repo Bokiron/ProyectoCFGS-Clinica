@@ -1,5 +1,7 @@
+import 'package:clinica_app/pages/Tienda/AdminDetalleProductos.dart';
 import 'package:clinica_app/pages/Tienda/DetalleProductoScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductoDestacadoCard extends StatelessWidget {
   final String nombre;
@@ -26,7 +28,29 @@ class ProductoDestacadoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      //Gestionamos la navegacion por el rol
+      onTap: () async {
+      //obtencion del rol desde sharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      final rol = prefs.getString('rol_usuario');
+      //si rol es admin navegamos a la pantalla de admin
+      if (rol == 'ADMIN') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AdminDetalleProductoScreen(
+              productoId: productoId,
+              nombre: nombre,
+              categoria: categoria,
+              precio: precio,
+              imagen: imagen,
+              descripcion: descripcion,
+              marca: marca,
+              especies: especies,
+            ),
+          ),
+        );
+      } else {
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -42,7 +66,8 @@ class ProductoDestacadoCard extends StatelessWidget {
             ),
           ),
         );
-      },
+      }
+    },
     
     child: Container(
       width: double.infinity,
@@ -104,7 +129,7 @@ class ProductoDestacadoCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(18),
               ),
               child: Text(
-                precio,
+                precio + "€",
                 style: const TextStyle(
                   color: Colors.lightBlueAccent,
                   fontWeight: FontWeight.bold,

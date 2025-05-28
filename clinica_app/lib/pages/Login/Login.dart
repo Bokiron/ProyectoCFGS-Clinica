@@ -15,7 +15,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   bool rememberMe = false; // Estado del checkbox para recordar sesión
-  bool _obscureText = true; // Added to manage password visibility
+  bool _obscureText = true; // Visibilidad de la contraseña
   final usuarioController = TextEditingController();
   final contrasenaController = TextEditingController();
   @override
@@ -202,34 +202,48 @@ class _LoginState extends State<Login> {
   );
   }
 
-  Future<void> guardarDnioEmailUsuario(String dni) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('dni_usuario', dni);
-  }
-
+  //Este metodo hace que si el login es correcto guarde, guardemos el dni y rol del usuario en sharedPrefences,
+  //obteniendolos a través de una consulta GET a la BBDD
   Future<void> loginUsuario() async {
-  final url = Uri.parse('http://192.168.1.131:8080/usuarios/login');
-  final response = await http.post(
-    url,
-    headers: {'Content-Type': 'application/json'},
-    body: jsonEncode({
-      "dni": usuarioController.text,
-      "contrasena": contrasenaController.text,
-    }),
-  );
+    //funcion de login
+    final url = Uri.parse('http://192.168.1.131:8080/usuarios/login');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "dni": usuarioController.text,
+        "contrasena": contrasenaController.text,
+      }),
+    );
+  //si login es exitoso
+    if (response.statusCode == 200) {
+      // Login correcto: ahora obtenemos la info del usuario desde la bbdd
+      //(podria bastar con guardar el dni desde el textfield pero como tambien hace falta el rol, cogemos los dos desde laBBDD y ya esta)
+      final dni = usuarioController.text.trim();
+      final infoUrl = Uri.parse('http://192.168.1.131:8080/usuarios/$dni');
+      final infoResponse = await http.get(infoUrl);
 
-  if (response.statusCode == 200) {
-    await guardarDnioEmailUsuario(usuarioController.text.trim());//guardar dni del usuario
-    // Login correcto
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => Inicio()),
-    );
-  } else {
-    // Login incorrecto
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error: ${response.statusCode} - ${response.body}'))  
-    );
+      if (infoResponse.statusCode == 200) {
+        final data = jsonDecode(infoResponse.body);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('dni_usuario', data['dni']);//guarda dni
+        await prefs.setString('rol_usuario', data['rol']); // Guarda el rol
+
+        // Ahora puedes navegar según el rol si quieres:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Inicio()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No se pudo obtener la información del usuario')),
+        );
+      }
+    } else {
+      // Login incorrecto
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${response.statusCode} - ${response.body}')),
+      );
+    }
   }
-}
 }

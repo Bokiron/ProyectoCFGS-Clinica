@@ -112,13 +112,30 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
           ),
 
           const SizedBox(height: 18),
-          // Nombre del producto
-          Text(
-            widget.nombre,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 22,
-            ),
+          // Fila con nombre a la izquierda y precio del prodcuto a la derecha
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  widget.nombre,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Text(
+                //Se mostrará el precio total que se añade al carrito, ya que se ira sumando el numero de unidades seleccionado, se actualiza dinamicamente
+                '${(unidades * double.parse(widget.precio)).toStringAsFixed(2)}€',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                  color: Colors.lightBlueAccent,
+                ),
+                textAlign: TextAlign.right,
+              ),
+            ],
           ),
           // Marca del producto
           Text(

@@ -351,6 +351,4 @@ class _RegistroMascotaState extends State<RegistroMascota> {
       print('Error al subir imagen: $e');
     }
   }
-
-
 }

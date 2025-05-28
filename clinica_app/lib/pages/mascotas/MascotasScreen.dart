@@ -57,11 +57,11 @@ class _MascotasState extends State<Mascotas> {
         isLoading = false;
       });
     } catch (e) {
-      // Si ocurre un error (de red, backend, parsing, etc.), muestra mensaje de error
+      /*// Si ocurre un error (de red, backend, parsing, etc.), muestra mensaje de error
       setState(() {
         errorMsg = 'Error al cargar mascotas: $e';
         isLoading = false;
-      });
+      });*/
     }
   }
 

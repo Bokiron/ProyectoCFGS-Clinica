@@ -9,8 +9,14 @@ import com.example.clinica.mappers.ProductoMapper;
 import com.example.clinica.repositories.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,6 +59,28 @@ public class ProductoService {
         return saved.stream()
             .map(productoMapper::toGetProductoDto)
             .collect(Collectors.toList());
+    }
+
+    // Define la carpeta donde se guardarán las imágenes (ajusta la ruta según tu SO)
+    private static final String UPLOAD_DIR = "C:/Users/david/Desktop/2DAM/PROYECTO-CFGS/Proyecto - Codigo/imagenesProductos/";
+    //metodo para guardar la imagen
+    public String guardarImagen(Long mascotaId, MultipartFile imagen) throws IOException {
+        // Crea la carpeta si no existe
+        Path uploadPath = Paths.get(UPLOAD_DIR);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        // Genera un nombre único para el archivo
+        String extension = imagen.getOriginalFilename().split("\\.")[1];
+        String nombreArchivo = mascotaId + "_" + UUID.randomUUID() + "." + extension;
+
+        // Guarda el archivo
+        Path filePath = uploadPath.resolve(nombreArchivo);
+        Files.copy(imagen.getInputStream(), filePath);
+
+        // Retorna la ruta relativa (ej: "uploads/mascotas/1_abc123.jpg")
+        return nombreArchivo;
     }
 
     // Filtro por especie y/o categoría

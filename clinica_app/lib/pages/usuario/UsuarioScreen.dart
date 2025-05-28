@@ -10,11 +10,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 class UsuarioScreen extends StatelessWidget {
   const UsuarioScreen({Key? key}) : super(key: key);
 
-  // Lista de apartados con su imagen de asset y widget destino
+  // Lista de apartados con su imagen de asset y widget destino.
   static final List<_AjusteItem> items = [
     _AjusteItem('Mi cuenta', "lib/assets/icon_editarUsuario.png", EditarPerfilScreen()),
     _AjusteItem('Mis mascotas', "lib/assets/icon_mascotasUsuario.png", Mascotas()),
-    _AjusteItem('Citas', "lib/assets/icon_citasUsuario.png", CitasScreen()),
+    _AjusteItem('Mis Citas', "lib/assets/icon_citasUsuario.png", CitasScreen()),
     _AjusteItem('Historial de citas', "lib/assets/icon_historialCitasUsuario.png", HistorialCitas()),
     _AjusteItem('Pagos', "lib/assets/icon_pagosUsuario.png", ProximamenteScreen()),
     _AjusteItem('Favoritos', "lib/assets/icon_favoritosUsuario.png", ProximamenteScreen()),
@@ -111,6 +111,7 @@ class _AjusteTile extends StatelessWidget {
               // Borrar datos de sesión (SharedPreferences)
               final prefs = await SharedPreferences.getInstance();
               await prefs.remove('dni_usuario');
+              await prefs.remove('rol_usuario');
               // Navegar al login
               Navigator.pushAndRemoveUntil(
                 context,

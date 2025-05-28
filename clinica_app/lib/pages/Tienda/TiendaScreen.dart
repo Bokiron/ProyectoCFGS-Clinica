@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'package:clinica_app/pages/Tienda/AdminCrearProducto.dart';
 import 'package:clinica_app/pages/Tienda/CarritoScreen.dart';
 import 'package:clinica_app/pages/Tienda/ResultadosBusquedaScreen.dart';
 import 'package:clinica_app/pages/Tienda/TarjetaProductosTienda.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Tienda extends StatefulWidget {
   const Tienda({super.key});
@@ -94,11 +96,21 @@ class _TiendaState extends State<Tienda> {
   // Lista de productos destacados (puedes ponerla en tu _TiendaState)
   List<Map<String, dynamic>> productosApi = [];
   bool loadingProductos = true;
+  String? rolUsuario;
 
   @override
   void initState() {
     super.initState();
+    cargarRolUsuario();
     cargarProductosDesdeApi();
+  }
+
+  Future<void> cargarRolUsuario() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      rolUsuario = prefs.getString('rol_usuario');
+    });
+    print("Rol usuario en build: $rolUsuario");
   }
 
   Future<void> cargarProductosDesdeApi() async {
@@ -589,7 +601,7 @@ Future<void> buscarProductosAvanzado(BuildContext context) async {
                         productoId: producto['id'] ?? '',
                         nombre: producto['nombre'] ?? '',
                         categoria: producto['categoria'] ?? '',
-                        precio: "${producto['precio'] ?? ''} €",
+                        precio: "${producto['precio'] ?? ''}",
                         imagen: imagenUrl,
                         descripcion: producto['descripcion'] ?? '',
                         especies: (producto['especies'] as List<dynamic>?)
@@ -602,20 +614,43 @@ Future<void> buscarProductosAvanzado(BuildContext context) async {
                 ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color.fromARGB(255, 152, 239, 153),
-        elevation: 6,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const CarritoScreen()),
-          ); // O usa MaterialPageRoute si no usas rutas nombradas
-        },
-        child: Image.asset(
-          "lib/assets/icon_cesta.png", // Pon aquí la ruta a tu icono de la cesta
-          width: 32,
-          height: 32,
-        ),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (rolUsuario == 'ADMIN')
+            Padding(
+              padding: const EdgeInsets.only(bottom: 70.0), // distancia sobre la cesta
+              child: FloatingActionButton(
+                backgroundColor: const Color.fromARGB(255, 0, 70, 192),
+                heroTag: 'addProductBtn',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AdminCrearProductoScreen()),
+                  );
+                  cargarProductosDesdeApi();//al volver cargar productos
+                },
+                child: const Icon(Icons.add, color: Colors.white, size: 30),
+              ),
+            ),
+          FloatingActionButton(
+            backgroundColor: const Color.fromARGB(255, 152, 239, 153),
+            elevation: 6,
+            heroTag: 'cartBtn',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CarritoScreen()),
+              );
+            },
+            child: Image.asset(
+              "lib/assets/icon_cesta.png",
+              width: 32,
+              height: 32,
+            ),
+          ),
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );

@@ -35,8 +35,8 @@ class _UsuarioInfoPageState extends State<UsuarioInfoPage> {
     }
   }
 
-  Future<void> obtenerInfoUsuario(String dniOrEmail) async {
-    final url = Uri.parse('http://192.168.1.131:8080/usuarios/$dniOrEmail');
+  Future<void> obtenerInfoUsuario(String dni) async {
+    final url = Uri.parse('http://192.168.1.131:8080/usuarios/$dni');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
