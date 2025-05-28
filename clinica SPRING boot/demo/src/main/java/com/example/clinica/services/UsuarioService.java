@@ -3,6 +3,8 @@ package com.example.clinica.services;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.clinica.dtos.CreateUsuarioDto;
 import com.example.clinica.dtos.GetUsuarioDto;
@@ -15,11 +17,13 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
+    private final PasswordEncoder passwordEncoder;
 
     // Constructor que inyecta el repositorio y el mapper
-    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper) {
+    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // Obtener todos los usuarios
@@ -45,6 +49,13 @@ public class UsuarioService {
         return usuarioRepository.findByDni(dni);
     }
 
+    // Para login, verifica la contraseña:
+    public boolean login(String dni, String contrasena) {
+        return usuarioRepository.findByDni(dni)
+            .map(u -> passwordEncoder.matches(contrasena, u.getContrasena()))//spring security compara la contraseña con el hash
+            .orElse(false);
+    }
+
     /*//OBtener usuario por email o DNI
     public Optional<Usuario> findByDniOrEmail(String dniOrEmail) {
         // Busca primero por DNI, si no encuentra, busca por email
@@ -59,6 +70,7 @@ public class UsuarioService {
     // Crear un nuevo usuario
     public Usuario createUsuario(CreateUsuarioDto dto) {
         Usuario nuevoUsuario = usuarioMapper.toUsuario(dto);
+        nuevoUsuario.setContrasena(passwordEncoder.encode(dto.getContrasena()));
         return usuarioRepository.save(nuevoUsuario);
     }
 
@@ -66,8 +78,10 @@ public class UsuarioService {
     public Optional<Usuario> updateUsuario(String dni, CreateUsuarioDto dto) {
         return usuarioRepository.findByDni(dni).map(usuario -> {
             usuario.setNombre(dto.getNombre());
+            usuario.setApellidos(dto.getApellidos());
             usuario.setEmail(dto.getEmail());
             usuario.setTelefono(dto.getTelefono());
+            usuario.setContrasena(passwordEncoder.encode(dto.getContrasena()));
             return usuarioRepository.save(usuario);
         });
     }

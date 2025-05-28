@@ -90,15 +90,15 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
     //Ruta para comprobar el logueo de un usuario
-    @PostMapping("/{login}")
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDto loginDto) {
-        Optional<Usuario> usuarioOpt = usuarioService.getUsuarioByDniLogin(loginDto.getDni());
-        if (usuarioOpt.isPresent() && usuarioOpt.get().getContrasena().equals(loginDto.getContrasena())) {
+        if (usuarioService.login(loginDto.getDni(), loginDto.getContrasena())) {
             // Opcional: devolver info del usuario o token
             return ResponseEntity.ok().body("Login correcto");
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
         }
     }
+
 }
 
