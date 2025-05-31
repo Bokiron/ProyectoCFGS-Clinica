@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
-    // filtro para buscar por especias, con containing JPA busca dentro de listas
+    // filtro para buscar por especias, con containing, JPA busca dentro de listas
     List<Producto> findByEspeciesContaining(EspecieProducto especies);
     List<Producto> findByCategoria(Producto.CategoriaProducto categoria);
     List<Producto> findByEspeciesContainingAndCategoria(Producto.EspecieProducto especie, Producto.CategoriaProducto categoria);

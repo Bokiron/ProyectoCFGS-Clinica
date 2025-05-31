@@ -12,6 +12,8 @@ class SignUp extends StatefulWidget {
 
 // Define la clase _SignUpState, que representa el estado mutable del widget SignUp.
 class _SignUpState extends State<SignUp> {
+  //
+  final _formKey = GlobalKey<FormState>(); 
   // Define una variable para mantener el valor seleccionado del DropdownButtonFormField para el género.
   bool _obscureText = true; // Added to manage password visibility
   final dniController = TextEditingController();
@@ -20,6 +22,29 @@ class _SignUpState extends State<SignUp> {
   final apellidosController = TextEditingController();
   final emailController = TextEditingController();
   final telefonoController = TextEditingController();
+  //Definición expresiones regulares (Regex)
+  // Expresiones regulares
+  final RegExp dniRegex = RegExp(r'^[0-9]{8}[A-Za-z]$');
+  final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+  final RegExp telefonoRegex = RegExp(r'^(\+|00)[0-9]{1,5}(?:[ -]?[0-9]{3,}){2,}$');
+
+  String? validarDNI(String? value) {
+    if (value == null || value.isEmpty) return 'DNI obligatorio';
+    if (!dniRegex.hasMatch(value)) return 'Formato inválido (Ej: 12345678A)';
+    return null;
+  }
+
+  String? validarEmail(String? value) {
+    if (value == null || value.isEmpty) return 'Email obligatorio';
+    if (!emailRegex.hasMatch(value)) return 'Formato inválido (Ej: carmen@gmail.com)';
+    return null;
+  }
+
+  String? validarTelefono(String? value) {
+    if (value == null || value.isEmpty) return 'Teléfono obligatorio';
+    if (!telefonoRegex.hasMatch(value)) return 'Formato inválido (Ej: +34 666303491)';
+    return null;
+  }
   @override
   Widget build(BuildContext context) {
     // Devuelve un Scaffold, que proporciona la estructura visual básica para la pantalla.
@@ -49,7 +74,9 @@ class _SignUpState extends State<SignUp> {
       ),
       // Define el cuerpo de la pantalla como un Stack.
       // Stack permite que los widgets se superpongan entre sí.
-      body: Stack(
+      body: Form( // Envuelve todo en un Form
+      key: _formKey,
+      child: Stack(
         // Define una lista de widgets hijos para el Stack.
         children: [
           // Widget Positioned.fill para ocupar todo el espacio disponible.
@@ -92,6 +119,8 @@ class _SignUpState extends State<SignUp> {
                       // Widget TextFormField para el campo DNI.
                       TextFormField(
                         controller: dniController,//controaldor API
+                        //validar formato con regex
+                        validator: validarDNI,
                         // Define la decoración del campo, incluyendo la etiqueta, el estilo de la etiqueta, el borde y el icono.
                         decoration: const InputDecoration(
                           labelText: "DNI",
@@ -102,6 +131,12 @@ class _SignUpState extends State<SignUp> {
                           ),
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(color: Colors.blue),
+                          ),
+                          errorBorder: UnderlineInputBorder( // Borde rojo cuando hay error
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
+                          focusedErrorBorder: UnderlineInputBorder( // Borde rojo cuando hay error y está enfocado
+                            borderSide: BorderSide(color: Colors.red),
                           ),
                           prefixIcon: Icon(Icons.badge, color: Colors.white),
                         ),
@@ -194,6 +229,8 @@ class _SignUpState extends State<SignUp> {
                       // Widget TextFormField para el campo Email.
                       TextFormField(
                         controller: emailController,//controaldor API
+                        //validar formato
+                        validator: validarEmail,
                         // Define la decoración del campo, incluyendo la etiqueta, el estilo de la etiqueta, el borde y el icono.
                         decoration: const InputDecoration(
                           labelText: "Email",
@@ -204,6 +241,12 @@ class _SignUpState extends State<SignUp> {
                           ),
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(color: Colors.blue),
+                          ),
+                          errorBorder: UnderlineInputBorder( // Borde rojo cuando hay error
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
+                          focusedErrorBorder: UnderlineInputBorder( // Borde rojo cuando hay error y está enfocado
+                            borderSide: BorderSide(color: Colors.red),
                           ),
                           prefixIcon: Icon(Icons.email, color: Colors.white),
                         ),
@@ -216,6 +259,7 @@ class _SignUpState extends State<SignUp> {
                       // Widget TextFormField para el campo Telefono.
                       TextFormField(
                         controller: telefonoController,//controaldor API
+                        validator: validarTelefono,
                         // Define la decoración del campo, incluyendo la etiqueta, el estilo de la etiqueta, el borde y el icono.
                         decoration: const InputDecoration(
                           labelText: "Nº Teléfono",
@@ -226,6 +270,12 @@ class _SignUpState extends State<SignUp> {
                           ),
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(color: Colors.blue),
+                          ),
+                          errorBorder: UnderlineInputBorder( // Borde rojo cuando hay error
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
+                          focusedErrorBorder: UnderlineInputBorder( // Borde rojo cuando hay error y está enfocado
+                            borderSide: BorderSide(color: Colors.red),
                           ),
                           prefixIcon: Icon(Icons.phone, color: Colors.white),
                         ),
@@ -238,7 +288,10 @@ class _SignUpState extends State<SignUp> {
                       ElevatedButton(
                         onPressed: () {
                           // Acción al presionar "Registrarme"
-                          registrarUsuario();
+                          //valida que todos los campos tienen un formato válido
+                          if (_formKey.currentState!.validate()) {
+                            registrarUsuario();
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.lightBlueAccent,
@@ -259,6 +312,7 @@ class _SignUpState extends State<SignUp> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

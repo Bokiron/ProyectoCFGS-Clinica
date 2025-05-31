@@ -86,7 +86,7 @@ class _InicioState extends State<Inicio> {
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        customBorder: const CircleBorder(),
+                        customBorder: const CircleBorder(),//borde circular
                         onTap: () {},
                           child: ClipOval(
                             child: Image.asset(
@@ -322,7 +322,7 @@ Widget _circleMenuButton({
     elevation: elevation,
     shape: const CircleBorder(),
     color: color,
-    child: InkWell(
+    child: InkWell(//Inkwell hace que los circulos sean clickables
       customBorder: const CircleBorder(),
       onTap: onTap,
       child: SizedBox(
@@ -343,6 +343,7 @@ Widget _circleMenuButton({
               Icon(icon, color: iconColor, size: isMain ? 40 : 28),
             
             const SizedBox(height: 4),
+            //Nombre de la sección
             Text(
               label,
               style: TextStyle(

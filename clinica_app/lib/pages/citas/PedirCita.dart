@@ -259,25 +259,6 @@ class PedircitaState extends State<Pedircita> {
                                       mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        // --- Datos del usuario ---
-                                        const Text(
-                                          "Persona a cargo de la reserva:",
-                                          style: TextStyle(fontSize: 15, color: Colors.black54),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        ListTile(
-                                          contentPadding: EdgeInsets.zero,
-                                          leading: Icon(Icons.person, size: 22),
-                                          title: Text(
-                                            nombreUsuario ?? "Cargando...",
-                                            style: TextStyle(fontSize: 15),
-                                          ),
-                                          subtitle: Text(
-                                            "${emailUsuario ?? ""}\nTel: ${telefonoUsuario ?? ""}",
-                                            style: TextStyle(fontSize: 13),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 10),
                                         // --- Dropdown para seleccionar el servicio ---
                                         Text("Servicio:", style: TextStyle(fontWeight: FontWeight.bold)),
                                         DropdownButton<String>(

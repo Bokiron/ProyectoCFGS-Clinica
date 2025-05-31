@@ -42,7 +42,7 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
     return prefs.getString('dni_usuario'); // Cambia la clave si usas otro nombre
   }
 
-    Future<void> addToCart() async {
+    Future<void> anadirCarrito() async {
     final String? dniUsuario = await obtenerDniUsuario();
     if (dniUsuario == null) {
       // Muestra un mensaje de error si no hay usuario logueado
@@ -216,7 +216,7 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
                   ),
                   onPressed: () {
                     //lógica para añadir a la cesta
-                    addToCart();
+                    anadirCarrito();
                   },
                 ),
               ),

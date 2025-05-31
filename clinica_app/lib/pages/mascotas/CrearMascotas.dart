@@ -21,9 +21,21 @@ class _RegistroMascotaState extends State<RegistroMascota> {
   final fechaNacimientoController = TextEditingController();
   final pesoController = TextEditingController();
   File? _imagenMascota;
-  final List<String> tipos = ["Perro", "Gato"];
+  final List<String> tipos = ["Perro", "Gato", "Loros", "Conejo"];
   final List<String> tamanos = ["Pequeño", "Mediano", "Grande"];
 
+    //key de validacion de formulario
+    final _formKey = GlobalKey<FormState>(); 
+
+    //Definición expresiones regulares
+  final RegExp fechaRegex = RegExp(r'^([0-2][0-9]|3[01])\/(0[1-9]|1[0-2])\/([0-9]{4})$');
+
+  //metodos validación
+  String? validarFecha(String? value) {
+    if (value == null || value.isEmpty) return 'Email obligatorio';
+    if (!fechaRegex.hasMatch(value)) return 'Formato inválido (Ej: dd/mm/aaaa)';
+    return null;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +63,9 @@ class _RegistroMascotaState extends State<RegistroMascota> {
           ),
         ],
       ),
-      body: ListView(
+      body: Form(
+        key: _formKey,
+        child:ListView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         children: [
           const SizedBox(height: 16),
@@ -176,8 +190,10 @@ class _RegistroMascotaState extends State<RegistroMascota> {
           ),
           const SizedBox(height: 22),
           // Fecha Nacimiento
-          TextField(
+          TextFormField(
             controller: fechaNacimientoController,
+            //validación formato
+            validator: validarFecha,
             decoration: const InputDecoration(
               labelText: "Fecha de Nacimiento",
               border: UnderlineInputBorder(),
@@ -228,7 +244,9 @@ class _RegistroMascotaState extends State<RegistroMascota> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () async {
-                await registrarMascota();
+                if (_formKey.currentState!.validate()) {
+                  await registrarMascota();
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blueAccent,
@@ -245,6 +263,7 @@ class _RegistroMascotaState extends State<RegistroMascota> {
           ),
           const SizedBox(height: 16),
         ],
+      ),
       ),
     );
   }
@@ -268,7 +287,7 @@ class _RegistroMascotaState extends State<RegistroMascota> {
       "raza": razaController.text.trim(),
       "fechaNacimiento": fechaNacimientoController.text.trim(), // formato dd/MM/yyyy
       "sexo": genero.toUpperCase(), // "MACHO" o "HEMBRA"
-      "tamano": tamano.toUpperCase(), // "PEQUENO", "MEDIANO", "GRANDE"
+      "tamano":tamano.toUpperCase().replaceAll('Ñ', 'N'), // "PEQUENO", "MEDIANO", "GRANDE"
       "peso": double.tryParse(pesoController.text.trim()) ?? 0.0, // Parsea el peso 
       "usuarioDni": usuarioDni
     };

@@ -64,7 +64,7 @@ public class CitaService {
         );
         return citas.stream().map(citaMapper::toGetCitaDto).collect(Collectors.toList());
     }
-
+    //obtener historial citas del usuario
     public List<GetCitaDto> getHistorialCitasByUsuario(String dni) {
         List<Cita> citas = citaRepository.findHistorialByUsuario(dni, LocalDateTime.now());
         return citas.stream().map(citaMapper::toGetCitaDto).collect(Collectors.toList());

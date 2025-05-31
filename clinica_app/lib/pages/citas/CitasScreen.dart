@@ -79,13 +79,13 @@ class CitasScreenState extends State<CitasScreen> {
       body: FutureBuilder<String?>(
         // Future que obtiene el DNI del usuario desde SharedPreferences
         future: obtenerDniOEmailUsuario(),
-        builder: (context, snapshotDni) {
+        builder: (context, usuarioDni) {
           // Si está cargando, muestra un spinner
-          if (snapshotDni.connectionState == ConnectionState.waiting) {
+          if (usuarioDni.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
           // Obtiene el DNI del snapshot
-          final dni = snapshotDni.data;
+          final dni = usuarioDni.data;
           // Si no hay DNI, muestra un mensaje de error
           if (dni == null) {
             return const Center(child: Text('No se encontró el usuario.'));
@@ -94,17 +94,17 @@ class CitasScreenState extends State<CitasScreen> {
           return FutureBuilder<List<Map<String, dynamic>>>(
             // Future que obtiene las citas del usuario usando el DNI
             future: obtenerCitasUsuario(dni),
-            builder: (context, snapshot) {
+            builder: (context, usuario) {
               // Si está cargando, muestra un spinner
-              if (snapshot.connectionState == ConnectionState.waiting) {
+              if (usuario.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
               // Si hay error, muestra el mensaje de error
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
+              if (usuario.hasError) {
+                return Center(child: Text('Error: ${usuario.error}'));
               }
-              // Obtiene la lista de citas del snapshot. Si es null, la lista es vacía
-              final citas = snapshot.data ?? [];
+              // Obtiene la lista de citas del usuario. Si es null, la lista es vacía
+              final citas = usuario.data ?? [];
               // Si no hay citas, muestra un mensaje amigable con un icono
               if (citas.isEmpty) {
                 return Center(

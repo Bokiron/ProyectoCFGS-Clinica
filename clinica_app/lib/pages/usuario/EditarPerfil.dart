@@ -21,6 +21,26 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
   bool _obscureText = true;
   bool isLoading = true;
   String? errorMsg;
+  //key de validacion de formulario
+    final _formKey = GlobalKey<FormState>(); 
+
+
+  //Definición expresiones regulares
+  final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+  final RegExp telefonoRegex = RegExp(r'^(\+|00)[0-9]{1,5}(?:[ -]?[0-9]{3,}){2,}$');
+
+  //metodos validación
+  String? validarEmail(String? value) {
+    if (value == null || value.isEmpty) return 'Email obligatorio';
+    if (!emailRegex.hasMatch(value)) return 'Formato inválido (Ej: carmen@gmail.com)';
+    return null;
+  }
+
+  String? validarTelefono(String? value) {
+    if (value == null || value.isEmpty) return 'Teléfono obligatorio';
+    if (!telefonoRegex.hasMatch(value)) return 'Formato inválido (Ej: +34 666303491)';
+    return null;
+  }
 
   @override
   void initState() {
@@ -74,6 +94,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
       "apellidos": apellidosController.text,
       "email": emailController.text,
       "telefono": telefonoController.text,
+      //si la contraseña es nula, se mantiene la actual
       "contrasena": contrasenaController.text.isNotEmpty
           ? contrasenaController.text
           : null, // Solo si quiere cambiarla
@@ -116,7 +137,9 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
         ),
       ),
       backgroundColor: Colors.white,
-      body: isLoading
+      body: Form( // Envuelve todo en un Form
+      key: _formKey,
+      child:isLoading
           ? const Center(child: CircularProgressIndicator())
           : errorMsg != null
               ? Center(child: Text(errorMsg!))
@@ -157,9 +180,16 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                       // Email (editable)
                       TextFormField(
                         controller: emailController,
+                        validator: validarEmail,
                         decoration: const InputDecoration(
                           labelText: "Email",
                           prefixIcon: Icon(Icons.email),
+                          errorBorder: UnderlineInputBorder( // Borde rojo cuando hay error
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
+                          focusedErrorBorder: UnderlineInputBorder( // Borde rojo cuando hay error y está enfocado
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
                         ),
                         keyboardType: TextInputType.emailAddress,
                       ),
@@ -167,8 +197,15 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                       // Teléfono (editable)
                       TextFormField(
                         controller: telefonoController,
+                        validator: validarTelefono,
                         decoration: const InputDecoration(
                           labelText: "Teléfono",
+                          errorBorder: UnderlineInputBorder( // Borde rojo cuando hay error
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
+                          focusedErrorBorder: UnderlineInputBorder( // Borde rojo cuando hay error y está enfocado
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
                           prefixIcon: Icon(Icons.phone),
                         ),
                         keyboardType: TextInputType.phone,
@@ -211,7 +248,13 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                       ),
                       const SizedBox(height: 30),
                       ElevatedButton(
-                        onPressed: actualizarUsuario,
+                        onPressed: () {
+                          // Acción al presionar "Registrarme"
+                          //valida que todos los campos tienen un formato válido
+                          if (_formKey.currentState!.validate()) {
+                            actualizarUsuario();
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.lightBlueAccent,
                           minimumSize: const Size(double.infinity, 50),
@@ -227,6 +270,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                     ],
                   ),
                 ),
+      ),
     );
   }
 }

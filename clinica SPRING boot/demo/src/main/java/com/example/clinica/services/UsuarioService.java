@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.clinica.dtos.CreateUsuarioDto;
 import com.example.clinica.dtos.GetUsuarioDto;
+import com.example.clinica.dtos.UpdateUsuarioDto;
 import com.example.clinica.entities.Usuario;
 import com.example.clinica.mappers.UsuarioMapper;
 import com.example.clinica.repositories.UsuarioRepository;
@@ -75,16 +76,19 @@ public class UsuarioService {
     }
 
     // Actualizar un usuario
-    public Optional<Usuario> updateUsuario(String dni, CreateUsuarioDto dto) {
+    public Optional<Usuario> updateUsuario(String dni, UpdateUsuarioDto dto) {
         return usuarioRepository.findByDni(dni).map(usuario -> {
             usuario.setNombre(dto.getNombre());
             usuario.setApellidos(dto.getApellidos());
             usuario.setEmail(dto.getEmail());
             usuario.setTelefono(dto.getTelefono());
-            usuario.setContrasena(passwordEncoder.encode(dto.getContrasena()));
+            if (dto.getContrasena() != null && !dto.getContrasena().isEmpty()) {
+                usuario.setContrasena(passwordEncoder.encode(dto.getContrasena()));
+            }
             return usuarioRepository.save(usuario);
         });
     }
+
     //actualizar el rol de los usuarios
     public Optional<Usuario> updateUsuarioRol(String dni, Usuario.Rol nuevoRol) {
     return usuarioRepository.findByDni(dni).map(usuario -> {

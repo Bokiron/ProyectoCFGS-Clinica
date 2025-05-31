@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:clinica_app/pages/citas/CitaCard.dart';
+import 'package:clinica_app/pages/usuario/UsuarioScreen.dart';
 import 'package:clinica_app/pages/utils/auth_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -66,8 +67,31 @@ class _AdminCitasState extends State<AdminCitas> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Citas Confirmadas'),
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        centerTitle: true,
+        title: const Text(
+          "Agenda",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person, color: Colors.blueAccent),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UsuarioScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),

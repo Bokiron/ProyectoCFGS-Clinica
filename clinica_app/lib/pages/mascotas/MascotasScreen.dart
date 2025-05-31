@@ -33,39 +33,6 @@ class _MascotasState extends State<Mascotas> {
     cargarMascotasDelUsuario(); // Llama a la función que obtiene las mascotas del usuario logueado
   }
 
-  // Método asíncrono que obtiene el dni/email del usuario guardado en SharedPreferences
-  // y luego hace una petición HTTP para obtener sus mascotas.
-  Future<void> cargarMascotasDelUsuario() async {
-    try {
-      // Recupera el dni o email del usuario logueado
-      final dniOrEmail = await obtenerDniOEmailUsuario();
-
-      // Si no hay usuario logueado, muestra un mensaje de error
-      if (dniOrEmail == null) {
-        setState(() {
-          errorMsg = 'No hay usuario logueado';
-          isLoading = false;
-        });
-        return;
-      }
-
-      // Llama al método que obtiene la lista de mascotas del backend
-      final resultado = await fetchMascotasUsuario(dniOrEmail);
-
-      // Actualiza el estado con la lista de mascotas y oculta el loader
-      setState(() {
-        mascotas = resultado;
-        isLoading = false;
-      });
-    } catch (e) {
-      /*// Si ocurre un error (de red, backend, parsing, etc.), muestra mensaje de error
-      setState(() {
-        errorMsg = 'Error al cargar mascotas: $e';
-        isLoading = false;
-      });*/
-    }
-  }
-
   // Método que construye la interfaz de usuario.
   // Se llama cada vez que se actualiza el estado del widget (por ejemplo, tras llamar a setState).
   @override
@@ -314,6 +281,45 @@ class _MascotasState extends State<Mascotas> {
     }
   }
 
+  // Método asíncrono que obtiene el dni/email del usuario guardado en SharedPreferences
+  // y luego hace una petición HTTP para obtener sus mascotas.
+  Future<void> cargarMascotasDelUsuario() async {
+    try {
+      // Recupera el dni o email del usuario logueado
+      final dniOrEmail = await obtenerDniUsuario();
+
+      // Si no hay usuario logueado, muestra un mensaje de error
+      if (dniOrEmail == null) {
+        setState(() {
+          errorMsg = 'No hay usuario logueado';
+          isLoading = false;
+        });
+        return;
+      }
+
+      // Llama al método que obtiene la lista de mascotas del backend
+      final resultado = await fetchMascotasUsuario(dniOrEmail);
+
+      // Actualiza el estado con la lista de mascotas y oculta el loader
+      setState(() {
+        mascotas = resultado;
+        isLoading = false;
+      });
+    } catch (e) {
+      /*// Si ocurre un error (de red, backend, parsing, etc.), muestra mensaje de error
+      setState(() {
+        errorMsg = 'Error al cargar mascotas: $e';
+        isLoading = false;
+      });*/
+    }
+  }
+
+  // Función que obtiene el dni o email del usuario logueado desde SharedPreferences
+  Future<String?> obtenerDniUsuario() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('dni_usuario'); // Cambia la clave si usas otro nombre
+  }
+
   Future<void> eliminarMascota(int mascotaId) async {
     final url = Uri.parse('http://192.168.1.131:8080/mascotas/$mascotaId');
     final response = await http.delete(url);
@@ -329,12 +335,5 @@ class _MascotasState extends State<Mascotas> {
         SnackBar(content: Text('Error al eliminar mascota: ${response.body}')),
       );
     }
-  }
-
-
-  // Función que obtiene el dni o email del usuario logueado desde SharedPreferences
-  Future<String?> obtenerDniOEmailUsuario() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('dni_usuario'); // Cambia la clave si usas otro nombre
   }
 }

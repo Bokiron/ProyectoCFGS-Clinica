@@ -23,7 +23,7 @@ class _EditarMascotaState extends State<EditarMascota> {
   final fechaNacimientoController = TextEditingController();
   final pesoController = TextEditingController();
   File? _imagenMascota;
-  final List<String> tipos = ["Perro", "Gato"];
+  final List<String> tipos = ["Perro", "Gato", "Loros", "Conejo"];
   final List<String> tamanos = ["Pequeño", "Mediano", "Grande"];
 
   @override
@@ -271,7 +271,7 @@ void initState() {
     final body = {
       "raza": razaController.text,
       "peso": double.tryParse(pesoController.text) ?? 0,
-      "tamano": tamano.toUpperCase(), // Asegúrate de que coincida con el backend
+      "tamano": tamano.toUpperCase().replaceAll('Ñ', 'N'), // Reemplazamos el caracter Ñ por N
     };
     final response = await http.patch(
       url,

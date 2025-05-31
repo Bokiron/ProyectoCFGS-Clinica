@@ -174,6 +174,7 @@ Future<void> buscarProductosAvanzado(BuildContext context) async {
     );
     return;
   }
+  //construimos la url uniendo los parámetros separados por un and '&'
   final url = 'http://192.168.1.131:8080/productos?${params.join('&')}';
 
   // Llamada HTTP
@@ -584,6 +585,7 @@ Future<void> buscarProductosAvanzado(BuildContext context) async {
           ),
           const SizedBox(height: 16),
           loadingProductos
+          //si aún no se han cargado los productos muestra circulo de loading
               ? Center(child: CircularProgressIndicator())
               : Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),

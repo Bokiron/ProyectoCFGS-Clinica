@@ -83,7 +83,7 @@ public class ProductoService {
         return nombreArchivo;
     }
 
-    // Filtro por especie y/o categoría
+    // Filtro por especie, categoría o marca
     public List<GetProductoDto> findByEspecieCategoriaMarca(
         Producto.EspecieProducto especie,
         Producto.CategoriaProducto categoria,

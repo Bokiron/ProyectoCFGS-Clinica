@@ -92,9 +92,12 @@ public class CitaController {
         @RequestParam String espacio
     ) {
         LocalDate dia = LocalDate.parse(fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        //horas que empieza y acaba el dia
         LocalDateTime start = dia.atStartOfDay();
         LocalDateTime end = dia.atTime(LocalTime.MAX);
+        //obtener espacio
         Cita.Espacio espacioEnum = Cita.Espacio.valueOf(espacio.trim().toUpperCase());
+        //IMPORTANTE: ponemos el estado de la cita por defecto en CONFIRMADA
         List<Cita> citas = citaRepository.findByEspacioAndEstadoAndFechaCitaBetween(
             espacioEnum, Cita.EstadoCita.CONFIRMADA, start, end
         );

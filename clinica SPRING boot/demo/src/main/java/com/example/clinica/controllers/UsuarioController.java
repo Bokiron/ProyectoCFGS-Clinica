@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.clinica.dtos.CreateUsuarioDto;
 import com.example.clinica.dtos.GetUsuarioDto;
 import com.example.clinica.dtos.LoginRequestDto;
+import com.example.clinica.dtos.UpdateUsuarioDto;
 import com.example.clinica.dtos.UpdateUsuarioRolDto;
 import com.example.clinica.entities.Usuario;
 import com.example.clinica.mappers.UsuarioMapper;
@@ -64,11 +65,14 @@ public class UsuarioController {
 
     // Actualizar un usuario
     @PutMapping("/{dni}")
-    public ResponseEntity<GetUsuarioDto> updateUsuario(@PathVariable String dni, @RequestBody CreateUsuarioDto dto) {
+    public ResponseEntity<GetUsuarioDto> updateUsuario(
+        @PathVariable String dni,
+        @RequestBody UpdateUsuarioDto dto) {
         return usuarioService.updateUsuario(dni, dto)
                 .map(usuario -> ResponseEntity.ok(usuarioService.getUsuarioByDni(dni).orElse(null)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
     //actualizar rol de un usuario, solo para que puedan admins 
     @PutMapping("/{dni}/rol")
     @PreAuthorize("hasRole('ADMIN')")//comprueba que el usuario tenga el rol admin, mediante la dependencia spring security

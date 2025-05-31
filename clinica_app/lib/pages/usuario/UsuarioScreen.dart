@@ -94,7 +94,9 @@ class _AjusteTile extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(18),
       onTap: () async {
+        //si la ruta es null
         if (item.destino == null) {
+          //muestra ventana emergente
           final confirmed = await showDialog<bool>(
             context: context,
             builder: (context) => AlertDialog(
@@ -106,6 +108,7 @@ class _AjusteTile extends StatelessWidget {
               ],
             ),
           );
+          //si responde Cerrar Sesión
           if (confirmed == true) {
             try {
               // Borrar datos de sesión (SharedPreferences)
