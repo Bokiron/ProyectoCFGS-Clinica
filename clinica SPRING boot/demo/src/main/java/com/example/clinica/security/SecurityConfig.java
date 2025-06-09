@@ -42,12 +42,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/usuarios/**").permitAll()
 
                 // RUTAS PROTEGIDAS (requieren autenticación y rol ADMIN)
-                // Pero si quieres que ADMIN pueda acceder a TODO, no hace falta añadir rutas aquí
-
-                // Para que ADMIN pueda acceder a TODO (incluso a rutas protegidas), 
-                // y el resto solo a las permitidas, la configuración actual ya es suficiente
-                // porque el usuario en memoria tiene rol ADMIN y el anyRequest().authenticated()
-                // permite a ADMIN acceder a todo lo protegido
 
                 // Todas las demás rutas requieren autenticación (y solo ADMIN puede autenticarse)
                 .anyRequest().authenticated()

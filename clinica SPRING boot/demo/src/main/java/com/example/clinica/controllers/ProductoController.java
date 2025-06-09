@@ -52,7 +52,7 @@ public class ProductoController {
     public GetProductoDto createProducto(@RequestBody CreateProductoDto dto) {
         return productoService.create(dto);
     }
-    //Crear multiples productos
+    //Crear multiples productos(Para crear muchos productos en Postman)
     @PostMapping("/bulk")
     public List<GetProductoDto> createProductos(@RequestBody List<CreateProductoDto> productos) {
         return productoService.createAll(productos);

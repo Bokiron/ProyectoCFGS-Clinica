@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:clinica_app/pages/citas/CitaCard.dart';
 import 'package:clinica_app/pages/usuario/UsuarioScreen.dart';
+import 'package:clinica_app/pages/utils/appConfig.dart';
 import 'package:clinica_app/pages/utils/auth_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -31,7 +32,7 @@ class _AdminCitasState extends State<AdminCitas> {
     final fechaFormateada = "${_fechaSeleccionada.day.toString().padLeft(2, '0')}/"
         "${_fechaSeleccionada.month.toString().padLeft(2, '0')}/"
         "${_fechaSeleccionada.year}";
-    final url = 'http://192.168.1.131:8080/citas/confirmadas?fecha=$fechaFormateada&espacio=$espacio';
+    final url = '${AppConfig.baseUrl}/citas/confirmadas?fecha=$fechaFormateada&espacio=$espacio';
 
     try {
       final response = await http.get(
@@ -186,7 +187,7 @@ class _AdminCitasState extends State<AdminCitas> {
               ),
             ),
             const SizedBox(height: 12),
-            // Lista de citas confirmadas
+            // Lista de citas confirmadas, utilizando widget CitaCard
             Expanded(
               child: loading
                   ? const Center(child: CircularProgressIndicator())

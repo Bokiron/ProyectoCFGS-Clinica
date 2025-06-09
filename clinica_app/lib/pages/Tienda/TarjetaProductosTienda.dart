@@ -89,6 +89,7 @@ class ProductoDestacadoCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
+              //widget clipRect para mostrar la imagen con borde redondeado
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
@@ -109,7 +110,7 @@ class ProductoDestacadoCard extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
               ),
-              maxLines: 1,
+              maxLines: 1,//maximo ocupa 1 linea de texto
               overflow: TextOverflow.ellipsis,
             ),
             Text(

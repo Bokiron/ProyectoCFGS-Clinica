@@ -25,12 +25,15 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
 
     //Buscar todas las citas de un usuario. Ordenado por fecha, descendiente.
     List<Cita> findByUsuarioDniOrderByFechaCitaAsc(String dni);
+
     //eliminar citas de una mascota
     @Modifying
     @Query("DELETE FROM Cita c WHERE c.mascota.id = :mascotaId")
     void deleteByMascotaId(@Param("mascotaId") Long mascotaId);
+
     //buscar citas proximas confirmadas de un ususario
     List<Cita> findByUsuarioDniAndEstadoAndFechaCitaAfterOrderByFechaCitaAsc(String dni, Cita.EstadoCita estado, LocalDateTime fechaCita);
+    
     //historial citas del usuario
     @Query("SELECT c FROM Cita c WHERE c.usuario.dni = :dni AND ((c.estado = 'CANCELADA') OR (c.fechaCita < :ahora)) ORDER BY c.fechaCita DESC")
     List<Cita> findHistorialByUsuario(@Param("dni") String dni, @Param("ahora") LocalDateTime ahora);

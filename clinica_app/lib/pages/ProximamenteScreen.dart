@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ProximamenteScreen extends StatelessWidget {
   final String mensaje;
-  final String? assetIcono; // Puedes pasar el path de un icono personalizado
+  final String? assetIcono; // Se puede pasar el path de un icono personalizado
 
   const ProximamenteScreen({
     Key? key,

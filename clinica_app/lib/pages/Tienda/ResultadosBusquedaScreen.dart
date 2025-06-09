@@ -1,4 +1,5 @@
 import 'package:clinica_app/pages/usuario/UsuarioScreen.dart';
+import 'package:clinica_app/pages/utils/appConfig.dart';
 import 'package:flutter/material.dart';
 import 'TarjetaProductosTienda.dart';
 
@@ -83,7 +84,7 @@ class ResultadosBusquedaScreen extends StatelessWidget {
                         final producto = productos[index];
                         String imagenUrl = producto['imagen'] ?? '';
                         if (imagenUrl.isNotEmpty && !imagenUrl.startsWith('http')) {
-                          imagenUrl = 'http://192.168.1.131:8080/$imagenUrl';
+                          imagenUrl = '${AppConfig.baseUrl}/$imagenUrl';
                         }
                         return ProductoDestacadoCard(
                           productoId: producto['id'] ?? '',

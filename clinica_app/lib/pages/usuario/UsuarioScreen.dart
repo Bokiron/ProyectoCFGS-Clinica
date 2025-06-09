@@ -134,6 +134,7 @@ class _AjusteTile extends StatelessWidget {
           );
         }
       },
+      //icono de cada secion y su titulo
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:clinica_app/pages/usuario/UsuarioScreen.dart';
+import 'package:clinica_app/pages/utils/appConfig.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -53,7 +54,7 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
     }
 
     // TODO: Cambia la URL por la de tu backend
-    final url = Uri.parse('http://192.168.1.131:8080/carrito/$dniUsuario/linea');
+    final url = Uri.parse('${AppConfig.baseUrl}/carrito/$dniUsuario/linea');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},

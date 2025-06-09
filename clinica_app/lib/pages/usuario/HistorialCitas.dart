@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:clinica_app/pages/utils/appConfig.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,7 +19,7 @@ class HistorialCitasState extends State<HistorialCitas> {
   }
   //Peticion get para obtener las citas del usuario
   Future<List<Map<String, dynamic>>> obtenerCitasUsuario(String dni) async {
-    final url = 'http://192.168.1.131:8080/citas/usuario/$dni/historial';
+    final url = '${AppConfig.baseUrl}/citas/usuario/$dni/historial';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
