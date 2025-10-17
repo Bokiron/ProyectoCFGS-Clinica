@@ -4,6 +4,7 @@ import 'package:clinica_app/pages/Tienda/CarritoScreen.dart';
 import 'package:clinica_app/pages/Tienda/ResultadosBusquedaScreen.dart';
 import 'package:clinica_app/pages/Tienda/TarjetaProductosTienda.dart';
 import 'package:clinica_app/pages/usuario/UsuarioScreen.dart';
+import 'package:clinica_app/pages/utils/appConfig.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -117,7 +118,7 @@ class _TiendaState extends State<Tienda> {
   Future<void> cargarProductosDesdeApi() async {
     setState(() { loadingProductos = true; });
     try {
-      final response = await http.get(Uri.parse('http://192.168.1.131:8080/productos'));
+      final response = await http.get(Uri.parse('${AppConfig.baseUrl}/productos'));
       print("Respuesta status: ${response.statusCode}");
       print("Respuesta body: ${response.body}");
       if (response.statusCode == 200) {
@@ -144,7 +145,7 @@ Future<List<Map<String, dynamic>>> filtrarYObtenerProductos(String filtro, Strin
   try {
     // Realiza la petición HTTP al backend con el filtro y el valor correspondiente
     final response = await http.get(
-      Uri.parse('http://192.168.1.131:8080/productos?$filtro=$valor'),
+      Uri.parse('${AppConfig.baseUrl}/productos?$filtro=$valor'),
     );
     if (response.statusCode == 200) {
       // Si la respuesta es exitosa, decodifica el JSON y convierte cada producto a Map
@@ -174,7 +175,7 @@ Future<void> buscarProductosAvanzado(BuildContext context) async {
     );
     return;
   }
-  final url = 'http://192.168.1.131:8080/productos?${params.join('&')}';
+  final url = '${AppConfig.baseUrl}/productos?${params.join('&')}';
 
   // Llamada HTTP
   final response = await http.get(Uri.parse(url));
@@ -602,7 +603,7 @@ Future<void> buscarProductosAvanzado(BuildContext context) async {
                       print("Renderizando producto: $producto");
                       String imagenUrl = producto['imagen'] ?? '';
                       if (imagenUrl.isNotEmpty && !imagenUrl.startsWith('http')) {
-                        imagenUrl = 'http://192.168.1.131:8080/$imagenUrl';
+                        imagenUrl = '${AppConfig.baseUrl}/$imagenUrl';
                       }
                       return ProductoDestacadoCard(
                         productoId: producto['id'] ?? '',

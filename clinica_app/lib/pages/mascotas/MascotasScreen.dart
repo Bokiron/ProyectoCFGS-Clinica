@@ -3,6 +3,7 @@ import 'package:clinica_app/pages/mascotas/CrearMascotas.dart';
 import 'package:clinica_app/pages/mascotas/EditarMascotas.dart';
 import 'package:clinica_app/pages/data/GetMascotaDto.dart';
 import 'package:clinica_app/pages/usuario/UsuarioScreen.dart';
+import 'package:clinica_app/pages/utils/appConfig.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -156,7 +157,7 @@ class _MascotasState extends State<Mascotas> {
               radius: 24,
               backgroundColor: Colors.greenAccent.shade100,
               backgroundImage: (mascota.imagenUrl != null && mascota.imagenUrl!.isNotEmpty)
-                  ? NetworkImage('http://192.168.1.131:8080/${mascota.imagenUrl}')
+                  ? NetworkImage('${AppConfig.baseUrl}/${mascota.imagenUrl}')
                   : null,
               child: (mascota.imagenUrl == null || mascota.imagenUrl!.isEmpty)
                   ? Icon(Icons.pets, color: Colors.white, size: 28)
@@ -297,7 +298,7 @@ class _MascotasState extends State<Mascotas> {
   // Función que hace la petición HTTP al backend para obtener las mascotas del usuario
   // Recibe el dni o email y devuelve una lista de objetos GetMascotaDto
   Future<List<GetMascotaDto>> fetchMascotasUsuario(String dniOrEmail) async {
-    final url = Uri.parse('http://192.168.1.131:8080/mascotas/buscar?dniOrEmail=$dniOrEmail');
+    final url = Uri.parse('${AppConfig.baseUrl}/mascotas/buscar?dniOrEmail=$dniOrEmail');
     final response = await http.get(url);
 
     // Imprime en consola el código de estado y el cuerpo de la respuesta para depuración
@@ -315,7 +316,7 @@ class _MascotasState extends State<Mascotas> {
   }
 
   Future<void> eliminarMascota(int mascotaId) async {
-    final url = Uri.parse('http://192.168.1.131:8080/mascotas/$mascotaId');
+    final url = Uri.parse('${AppConfig.baseUrl}/mascotas/$mascotaId');
     final response = await http.delete(url);
 
     if (response.statusCode == 204) {

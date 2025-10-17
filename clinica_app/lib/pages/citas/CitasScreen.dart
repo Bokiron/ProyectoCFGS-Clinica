@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:clinica_app/pages/citas/CitaCard.dart';
 import 'package:clinica_app/pages/usuario/UsuarioScreen.dart';
+import 'package:clinica_app/pages/utils/appConfig.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,8 +21,8 @@ class CitasScreenState extends State<CitasScreen> {
   }
   //Peticion get para obtener las citas del usuario
   Future<List<Map<String, dynamic>>> obtenerCitasUsuario(String dni) async {
-    final url = 'http://192.168.1.131:8080/citas/usuario/$dni/proximas';
-    final response = await http.get(Uri.parse(url));
+    final url = Uri.parse('${AppConfig.baseUrl}/citas/usuario/$dni/proximas');
+    final response = await http.get(Uri.parse(url as String));
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
       return data.cast<Map<String, dynamic>>();
@@ -31,9 +32,9 @@ class CitasScreenState extends State<CitasScreen> {
   }
   //peticion patch para cambiar el estado de una cita
   Future<bool> cancelarCita(int idCita) async {
-    final url = 'http://192.168.1.131:8080/citas/$idCita';
+    final url = Uri.parse('${AppConfig.baseUrl}/citas/$idCita');
     final response = await http.patch(
-      Uri.parse(url),
+      Uri.parse(url as String),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'estado': 'CANCELADA'}),
     );

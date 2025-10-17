@@ -1,3 +1,4 @@
+import 'package:clinica_app/pages/utils/appConfig.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -28,7 +29,7 @@ class _CarritoScreenState extends State<CarritoScreen> {
     setState(() => loading = true); // Activa el indicador de carga
     final dni = await obtenerDniUsuario();
     if (dni == null) return; // Si no hay usuario, no se hace nada
-    final url = Uri.parse('http://192.168.1.131:8080/carrito/$dni');
+    final url = Uri.parse('${AppConfig.baseUrl}/carrito/$dni');
     final res = await http.get(url);
     if (res.statusCode == 200) {
       final data = jsonDecode(res.body);
@@ -47,7 +48,7 @@ class _CarritoScreenState extends State<CarritoScreen> {
     final dni = await obtenerDniUsuario();
     // Busca la línea correspondiente al producto
     final linea = lineas.firstWhere((l) => l['id'] == lineaId);
-    final url = Uri.parse('http://192.168.1.131:8080/carrito/$dni/linea/$lineaId');
+    final url = Uri.parse('${AppConfig.baseUrl}/carrito/$dni/linea/$lineaId');
     // Actualiza la cantidad en el backend
     await http.put(
       url,
@@ -66,7 +67,7 @@ class _CarritoScreenState extends State<CarritoScreen> {
   Future<void> cambiarSeleccion(int lineaId, bool seleccionado) async {
     final dni = await obtenerDniUsuario();
     final linea = lineas.firstWhere((l) => l['id'] == lineaId);
-    final url = Uri.parse('http://192.168.1.131:8080/carrito/$dni/linea/$lineaId');
+    final url = Uri.parse('${AppConfig.baseUrl}/carrito/$dni/linea/$lineaId');
     // Actualiza la selección en el backend
     await http.put(
       url,
@@ -94,7 +95,7 @@ class _CarritoScreenState extends State<CarritoScreen> {
 
     if (idsSeleccionados.isEmpty) return;
 
-    final url = Uri.parse('http://192.168.1.131:8080/carrito/$dni/lineas/eliminar');
+    final url = Uri.parse('${AppConfig.baseUrl}/carrito/$dni/lineas/eliminar');
     final res = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -194,7 +195,7 @@ class _CarritoScreenState extends State<CarritoScreen> {
                     // Prepara la URL de la imagen, añadiendo la base si es necesario
                     String imagenUrl = linea['imagenProducto'] ?? '';
                     if (imagenUrl.isNotEmpty && !imagenUrl.startsWith('http')) {
-                      imagenUrl = 'http://192.168.1.131:8080/$imagenUrl';
+                      imagenUrl = '${AppConfig.baseUrl}/$imagenUrl';
                     }
                     return Row(
                       crossAxisAlignment: CrossAxisAlignment.center,

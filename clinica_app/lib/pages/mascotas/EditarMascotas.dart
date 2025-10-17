@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:clinica_app/pages/data/GetMascotaDto.dart';
+import 'package:clinica_app/pages/utils/appConfig.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -267,7 +268,7 @@ void initState() {
 
   Future<void> actualizarMascota() async {
     final id = widget.mascota.id;
-    final url = Uri.parse('http://192.168.1.131:8080/mascotas/$id');
+    final url = Uri.parse('${AppConfig.baseUrl}/mascotas/$id');
     final body = {
       "raza": razaController.text,
       "peso": double.tryParse(pesoController.text) ?? 0,
@@ -307,7 +308,7 @@ void initState() {
       return ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: Image.network(
-          'http://192.168.1.131:8080/${widget.mascota.imagenUrl}',
+          '${AppConfig.baseUrl}/${widget.mascota.imagenUrl}',
           width: 120,
           height: 120,
           fit: BoxFit.cover,
@@ -331,7 +332,7 @@ void initState() {
   Future<void> _subirImagenMascota(int mascotaId, File imagen) async {
     try {
       // URL del endpoint para subir la imagen de la mascota
-      final url = Uri.parse('http://192.168.1.131:8080/mascotas/$mascotaId/imagen');
+      final url = Uri.parse('${AppConfig.baseUrl}/mascotas/$mascotaId/imagen');
       // Crea una petición multipart para enviar el archivo
       final request = http.MultipartRequest('POST', url);
       // Añade la imagen al cuerpo de la petición

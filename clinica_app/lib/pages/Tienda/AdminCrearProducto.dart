@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:clinica_app/pages/utils/appConfig.dart';
 import 'package:clinica_app/pages/utils/auth_utils.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
@@ -201,7 +202,7 @@ class _AdminCrearProductoScreenState extends State<AdminCrearProductoScreen> {
     }
 
     // Prepara el body para el POST
-    final url = Uri.parse('http://192.168.1.131:8080/productos');
+    final url = Uri.parse('${AppConfig.baseUrl}/productos');
     final body = {
       "nombre": nombreController.text.trim(),
       "marca": marcaController.text.trim(),
@@ -265,7 +266,7 @@ class _AdminCrearProductoScreenState extends State<AdminCrearProductoScreen> {
 
   Future<void> _subirImagenProducto(int productoId, File imagen) async {
     try {
-      final url = Uri.parse('http://192.168.1.131:8080/productos/$productoId/imagen');
+      final url = Uri.parse('${AppConfig.baseUrl}/productos/$productoId/imagen');
       final request = http.MultipartRequest('POST', url);
       request.files.add(await http.MultipartFile.fromPath('imagen', imagen.path));
       // cabecera de autenticación

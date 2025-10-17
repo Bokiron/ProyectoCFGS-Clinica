@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:clinica_app/pages/data/GetUsuarioDto.dart';
+import 'package:clinica_app/pages/utils/appConfig.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,7 +37,7 @@ class _UsuarioInfoPageState extends State<UsuarioInfoPage> {
   }
 
   Future<void> obtenerInfoUsuario(String dni) async {
-    final url = Uri.parse('http://192.168.1.131:8080/usuarios/$dni');
+    final url = Uri.parse('${AppConfig.baseUrl}/usuarios/$dni');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {

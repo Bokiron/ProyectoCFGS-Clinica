@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:clinica_app/pages/Login/ChangePassword.dart';
 import 'package:clinica_app/pages/Inicio.dart';
 import 'package:clinica_app/pages/Login/SignUp.dart';
+import 'package:clinica_app/pages/utils/appConfig.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -206,7 +207,7 @@ class _LoginState extends State<Login> {
   //obteniendolos a través de una consulta GET a la BBDD
   Future<void> loginUsuario() async {
     //funcion de login
-    final url = Uri.parse('http://192.168.1.131:8080/usuarios/login');
+    final url = Uri.parse('${AppConfig.baseUrl}/usuarios/login');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -220,7 +221,7 @@ class _LoginState extends State<Login> {
       // Login correcto: ahora obtenemos la info del usuario desde la bbdd
       //(podria bastar con guardar el dni desde el textfield pero como tambien hace falta el rol, cogemos los dos desde laBBDD y ya esta)
       final dni = usuarioController.text.trim();
-      final infoUrl = Uri.parse('http://192.168.1.131:8080/usuarios/$dni');
+      final infoUrl = Uri.parse('${AppConfig.baseUrl}/usuarios/$dni');
       final infoResponse = await http.get(infoUrl);
 
       if (infoResponse.statusCode == 200) {

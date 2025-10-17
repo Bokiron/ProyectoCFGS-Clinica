@@ -1,6 +1,7 @@
 
 import 'dart:convert';
 import 'package:clinica_app/pages/usuario/UsuarioScreen.dart';
+import 'package:clinica_app/pages/utils/appConfig.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -384,7 +385,7 @@ class PedircitaState extends State<Pedircita> {
                                           });
 
                                           final response = await http.post(
-                                            Uri.parse('http://192.168.1.131:8080/citas'),
+                                            Uri.parse('${AppConfig.baseUrl}/citas'),
                                             headers: {'Content-Type': 'application/json'},
                                             body: body,
                                           );
@@ -460,7 +461,7 @@ class PedircitaState extends State<Pedircita> {
 
     //Hace una petición HTTP GET al endpoint de usuario para obtener sus datos.
     final usuarioResp = await http.get(
-      Uri.parse('http://192.168.1.131:8080/usuarios/buscar?dniOrEmail=$dniOrEmail')
+      Uri.parse('${AppConfig.baseUrl}/usuarios/buscar?dniOrEmail=$dniOrEmail')
     );
 
     //Si la respuesta es exitosa (código 200):
@@ -478,7 +479,7 @@ class PedircitaState extends State<Pedircita> {
 
     //Hace una petición HTTP GET al endpoint de mascotas para obtener las mascotas del usuario.
     final mascotasResp = await http.get(
-      Uri.parse('http://192.168.1.131:8080/mascotas/buscar?dniOrEmail=$dniOrEmail')
+      Uri.parse('${AppConfig.baseUrl}/mascotas/buscar?dniOrEmail=$dniOrEmail')
     );
 
     //Si la respuesta es exitosa (código 200):
@@ -500,7 +501,7 @@ class PedircitaState extends State<Pedircita> {
   //obtiene los servicios para el espacio correspondiente
   Future<List<Map<String, dynamic>>> fetchServicios(String espacio) async {
     final response = await http.get(
-      Uri.parse('http://192.168.1.131:8080/servicios?espacioServicio=$espacio'),
+      Uri.parse('${AppConfig.baseUrl}/servicios?espacioServicio=$espacio'),
     );
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = jsonDecode(response.body);
@@ -512,10 +513,10 @@ class PedircitaState extends State<Pedircita> {
   // Llamar a _loadServicios() en initState() y cada vez que cambie _selectedEspacio
   Future<void> loadServicios() async {
     final espacio = _selectedEspacio == 0 ? "CONSULTA" : "PELUQUERIA";
-    final url = 'http://192.168.1.131:8080/servicios?espacioServicio=$espacio';
+    final url = Uri.parse('${AppConfig.baseUrl}/servicios?espacioServicio=$espacio');
     //log de depuración
     print('Cargando servicios desde: $url');
-    final response = await http.get(Uri.parse(url));
+    final response = await http.get(Uri.parse(url as String));
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = jsonDecode(response.body);
       setState(() {
@@ -542,7 +543,7 @@ class PedircitaState extends State<Pedircita> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.1.131:8080/citas/ocupadas?fecha=$fechaFormateada&espacio=$espacio'),
+        Uri.parse('${AppConfig.baseUrl}/citas/ocupadas?fecha=$fechaFormateada&espacio=$espacio'),
       );
       print("[DEBUG] Status code: ${response.statusCode}");
       print("[DEBUG] Response body: ${response.body}");

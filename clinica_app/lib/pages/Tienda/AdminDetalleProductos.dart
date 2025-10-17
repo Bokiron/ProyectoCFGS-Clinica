@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:clinica_app/pages/usuario/UsuarioScreen.dart';
+import 'package:clinica_app/pages/utils/appConfig.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:clinica_app/pages/utils/auth_utils.dart';
@@ -53,7 +54,7 @@ class _AdminDetalleProductoScreenState extends State<AdminDetalleProductoScreen>
     }
 
     // TODO: Cambia la URL por la de tu backend
-    final url = Uri.parse('http://192.168.1.131:8080/carrito/$dniUsuario/linea');
+    final url = Uri.parse('${AppConfig.baseUrl}/carrito/$dniUsuario/linea');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -347,7 +348,7 @@ class _AdminDetalleProductoScreenState extends State<AdminDetalleProductoScreen>
   }
 
   Future<bool> _editarProducto(String nuevoPrecio, String nuevaDescripcion) async {
-    final url = Uri.parse('http://192.168.1.131:8080/productos/${widget.productoId}');
+    final url = Uri.parse('${AppConfig.baseUrl}/productos/${widget.productoId}');
     //regex que elimina cualquier texto como "€" y convierte string en numero para que te lo acepte el backend como bigDecimal
     try {
       final response = await http.patch(
@@ -385,7 +386,7 @@ class _AdminDetalleProductoScreenState extends State<AdminDetalleProductoScreen>
   }
 
   Future<void> eliminarProducto(int productoId) async {
-    final url = Uri.parse('http://192.168.1.131:8080/productos/$productoId');
+    final url = Uri.parse('${AppConfig.baseUrl}/productos/$productoId');
     try {
       final response = await http.delete(
         url,
