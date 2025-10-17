@@ -72,5 +72,30 @@ flutter run
 # Construir APK de producción
 flutter build apk --release
 
+Configuración
+
+Para acceder a los endpoints del backend desde dispositivos móviles en la misma red, la IP del servidor se gestiona de manera global desde el archivo lib/utils/appConfig.dart. Si tu red o IP cambia, modifícala allí para que la aplicación siga funcionando correctamente.
+
+Características principales
+
+  - Registro y autenticación de usuarios (clientes y personal de clínica)
+
+  - Gestión de perfil de usuario y edición de datos
+
+  - Registro de mascotas con foto, raza, tamaño, sexo y fecha de nacimiento
+
+  - Validaciones avanzadas con expresiones regulares (DNI, email, teléfono, fecha)
+
+  - Sincronización directa con backend Spring Boot vía peticiones HTTP
+
+  - Acceso seguro y control de roles mediante Spring Security en el backend
+
+  - Configuración dinámica de la IP de conexión backend
+
+Licencia
+
+Este proyecto está licenciado bajo la MIT License.
+
+
 
 
